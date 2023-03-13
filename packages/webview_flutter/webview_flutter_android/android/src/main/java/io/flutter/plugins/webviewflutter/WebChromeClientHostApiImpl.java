@@ -18,6 +18,8 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import java.util.Objects;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
 
 /**
  * Host api implementation for {@link WebChromeClient}.

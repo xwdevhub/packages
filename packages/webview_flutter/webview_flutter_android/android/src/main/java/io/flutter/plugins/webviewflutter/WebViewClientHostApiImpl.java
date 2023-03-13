@@ -18,6 +18,8 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import java.util.Objects;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
 
 /**
  * Host api implementation for {@link WebViewClient}.
