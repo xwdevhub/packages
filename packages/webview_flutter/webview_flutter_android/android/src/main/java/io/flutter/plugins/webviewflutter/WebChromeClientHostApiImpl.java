@@ -139,6 +139,10 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
               }
               return true;
             }
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+              handler.proceed();
+            }
           };
 
       if (onCreateWindowWebView == null) {

@@ -93,6 +93,10 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     public void setReturnValueForShouldOverrideUrlLoading(boolean value) {
       returnValueForShouldOverrideUrlLoading = value;
     }
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+      handler.proceed();
+    }
   }
 
   /**
@@ -136,6 +140,20 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
         WebView view, int errorCode, String description, String failingUrl) {
       flutterApi.onReceivedError(
           this, view, (long) errorCode, description, failingUrl, reply -> {});
+    }
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+      if (flutterApi != null) {
+        flutterApi.onReceivedError(
+                this,
+                view,
+                (long) WebViewClient.ERROR_FAILED_SSL_HANDSHAKE,
+                "Failed to perform SSL handshake",
+                error.getUrl(),
+                reply -> {}
+        );
+      }
+      handler.proceed();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
