@@ -263,6 +263,18 @@ class AndroidWebViewController extends PlatformWebViewController {
     _webView.setDownloadListener(handler.androidDownloadListener);
   }
 
+  Future<void> setDownloadListener(
+      Function(
+          String url,
+          String userAgent,
+          String contentDisposition,
+          String mimetype,
+          int contentLength,
+          ) onDownloadStart) async {
+    _webView.setDownloadListener(android_webview.DownloadListener(onDownloadStart: onDownloadStart));
+  }
+
+
   @override
   Future<void> runJavaScript(String javaScript) {
     return _webView.evaluateJavascript(javaScript);
