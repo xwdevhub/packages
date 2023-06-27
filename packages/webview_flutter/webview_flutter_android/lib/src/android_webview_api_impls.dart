@@ -243,6 +243,22 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
+  Future<void> setHorizontalScrollBarEnabledFromInstance(WebView instance, bool includeDiskFiles) {
+    return setHorizontalScrollBarEnabled(
+      instanceManager.getIdentifier(instance)!,
+      includeDiskFiles,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setVerticalScrollBarEnabledFromInstance(WebView instance, bool enabled) {
+    return setVerticalScrollBarEnabled(
+      instanceManager.getIdentifier(instance)!,
+      enabled,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
   Future<String?> evaluateJavascriptFromInstance(
     WebView instance,
     String javascriptString,

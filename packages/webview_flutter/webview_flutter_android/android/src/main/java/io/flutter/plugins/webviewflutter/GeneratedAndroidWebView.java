@@ -672,6 +672,10 @@ public class GeneratedAndroidWebView {
 
     void clearCache(@NonNull Long instanceId, @NonNull Boolean includeDiskFiles);
 
+    void setHorizontalScrollBarEnabled(@NonNull Long instanceId, @NonNull Boolean includeDiskFiles);
+
+    void setVerticalScrollBarEnabled(@NonNull Long instanceId, @NonNull Boolean includeDiskFiles);
+
     void evaluateJavascript(
         @NonNull Long instanceId, @NonNull String javascriptString, Result<String> result);
 
@@ -1093,6 +1097,72 @@ public class GeneratedAndroidWebView {
                 }
                 reply.reply(wrapped);
               });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+                new BasicMessageChannel<>(
+                        binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.setHorizontalScrollBarEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+                  (message, reply) -> {
+                    ArrayList<Object> wrapped = new ArrayList<Object>();
+                    try {
+                      ArrayList<Object> args = (ArrayList<Object>) message;
+                      assert args != null;
+                      Number instanceIdArg = (Number) args.get(0);
+                      if (instanceIdArg == null) {
+                        throw new NullPointerException("instanceIdArg unexpectedly null.");
+                      }
+                      Boolean includeDiskFilesArg = (Boolean) args.get(1);
+                      if (includeDiskFilesArg == null) {
+                        throw new NullPointerException("includeDiskFilesArg unexpectedly null.");
+                      }
+                      api.setHorizontalScrollBarEnabled(
+                              (instanceIdArg == null) ? null : instanceIdArg.longValue(),
+                              includeDiskFilesArg);
+                      wrapped.add(0, null);
+                    } catch (Error | RuntimeException exception) {
+                      ArrayList<Object> wrappedError = wrapError(exception);
+                      wrapped = wrappedError;
+                    }
+                    reply.reply(wrapped);
+                  });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+                new BasicMessageChannel<>(
+                        binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.setVerticalScrollBarEnabled", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+                  (message, reply) -> {
+                    ArrayList<Object> wrapped = new ArrayList<Object>();
+                    try {
+                      ArrayList<Object> args = (ArrayList<Object>) message;
+                      assert args != null;
+                      Number instanceIdArg = (Number) args.get(0);
+                      if (instanceIdArg == null) {
+                        throw new NullPointerException("instanceIdArg unexpectedly null.");
+                      }
+                      Boolean includeDiskFilesArg = (Boolean) args.get(1);
+                      if (includeDiskFilesArg == null) {
+                        throw new NullPointerException("includeDiskFilesArg unexpectedly null.");
+                      }
+                      api.setVerticalScrollBarEnabled(
+                              (instanceIdArg == null) ? null : instanceIdArg.longValue(),
+                              includeDiskFilesArg);
+                      wrapped.add(0, null);
+                    } catch (Error | RuntimeException exception) {
+                      ArrayList<Object> wrappedError = wrapError(exception);
+                      wrapped = wrappedError;
+                    }
+                    reply.reply(wrapped);
+                  });
         } else {
           channel.setMessageHandler(null);
         }

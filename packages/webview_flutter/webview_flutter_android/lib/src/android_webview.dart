@@ -272,6 +272,14 @@ class WebView extends JavaObject {
     return api.clearCacheFromInstance(this, includeDiskFiles);
   }
 
+  Future<void> setHorizontalScrollBarEnabled(bool enabled) {
+    return api.setHorizontalScrollBarEnabledFromInstance(this, enabled);
+  }
+  Future<void> setVerticalScrollBarEnabled(bool enabled) {
+    return api.setVerticalScrollBarEnabledFromInstance(this, enabled);
+  }
+
+
   // TODO(bparrishMines): Update documentation once addJavascriptInterface is added.
   /// Asynchronously evaluates JavaScript in the context of the currently displayed page.
   ///
