@@ -888,7 +888,7 @@ class DownloadListener extends JavaObject {
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 class WebChromeClient extends JavaObject {
   /// Constructs a [WebChromeClient].
-  WebChromeClient({this.onProgressChanged, this.onShowFileChooser})
+  WebChromeClient({this.onProgressChanged, this.onShowFileChooser,this.onReceivedTitle})
       : super.detached() {
     AndroidWebViewFlutterApis.instance.ensureSetUp();
     api.createFromInstance(this);
@@ -902,6 +902,7 @@ class WebChromeClient extends JavaObject {
   WebChromeClient.detached({
     this.onProgressChanged,
     this.onShowFileChooser,
+    this.onReceivedTitle,
   }) : super.detached();
 
   /// Pigeon Host Api implementation for [WebChromeClient].
@@ -923,6 +924,7 @@ class WebChromeClient extends JavaObject {
     WebView webView,
     FileChooserParams params,
   )? onShowFileChooser;
+
 
   /// Sets the required synchronous return value for the Java method,
   /// `WebChromeClient.onShowFileChooser(...)`.
@@ -953,11 +955,18 @@ class WebChromeClient extends JavaObject {
     );
   }
 
+  final  Function(
+      WebView webView,
+      String title,
+      )? onReceivedTitle;
+
+
   @override
   WebChromeClient copy() {
     return WebChromeClient.detached(
       onProgressChanged: onProgressChanged,
       onShowFileChooser: onShowFileChooser,
+      onReceivedTitle:onReceivedTitle,
     );
   }
 }

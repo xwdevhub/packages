@@ -2755,19 +2755,33 @@ public class GeneratedAndroidWebView {
       return new StandardMessageCodec();
     }
 
-    public void onProgressChanged(
+    public void onReceivedTitle(
         @NonNull Long instanceIdArg,
         @NonNull Long webViewInstanceIdArg,
-        @NonNull Long progressArg,
+        @NonNull String title,
         Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger,
-              "dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged",
+              "dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle",
               getCodec());
       channel.send(
-          new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, progressArg)),
+          new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, title)),
           channelReply -> callback.reply(null));
+    }
+    public void onProgressChanged(
+            @NonNull Long instanceIdArg,
+            @NonNull Long webViewInstanceIdArg,
+            @NonNull Long progressArg,
+            Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+              new BasicMessageChannel<>(
+                      binaryMessenger,
+                      "dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged",
+                      getCodec());
+      channel.send(
+              new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, progressArg)),
+              channelReply -> callback.reply(null));
     }
 
     public void onShowFileChooser(

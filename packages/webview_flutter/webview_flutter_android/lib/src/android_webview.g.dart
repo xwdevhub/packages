@@ -1905,6 +1905,8 @@ abstract class WebChromeClientFlutterApi {
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 
+  void onReceivedTitle(int instanceId, int webViewInstanceId, String title);
+
   Future<List<String?>> onShowFileChooser(
       int instanceId, int webViewInstanceId, int paramsInstanceId);
 
@@ -1932,6 +1934,33 @@ abstract class WebChromeClientFlutterApi {
           assert(arg_progress != null,
               'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null, expected non-null int.');
           api.onProgressChanged(
+              arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
+          return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle was null, expected non-null int.');
+          final int? arg_webViewInstanceId = (args[1] as int?);
+          assert(arg_webViewInstanceId != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle was null, expected non-null int.');
+          final String? arg_progress = (args[2] as String?);
+          assert(arg_progress != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onReceivedTitle was null, expected non-null int.');
+          api.onReceivedTitle(
               arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
           return;
         });

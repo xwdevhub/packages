@@ -854,6 +854,8 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
   }
 }
 
+
+
 /// Flutter api implementation for [DownloadListener].
 class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   /// Constructs a [DownloadListenerFlutterApiImpl].
@@ -900,6 +902,25 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
     }
 
     return Future<List<String>>.value(const <String>[]);
+  }
+
+  @override
+  void onReceivedTitle(int instanceId, int webViewInstanceId, String title) {
+    final WebChromeClient? instance = instanceManager
+        .getInstanceWithWeakReference(instanceId) as WebChromeClient?;
+    final WebView? webViewInstance = instanceManager
+        .getInstanceWithWeakReference(webViewInstanceId) as WebView?;
+    assert(
+    instance != null,
+    'InstanceManager does not contain an WebChromeClient with instanceId: $instanceId',
+    );
+    assert(
+    webViewInstance != null,
+    'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    if (instance!.onReceivedTitle != null) {
+      instance.onReceivedTitle!(webViewInstance!, title);
+    }
   }
 }
 

@@ -41,6 +41,8 @@ class AndroidWebViewProxy {
       android_webview.WebView webView,
       android_webview.FileChooserParams params,
     )? onShowFileChooser,
+  void Function(android_webview.WebView webView, String title)?
+  onReceivedTitle,
   }) createAndroidWebChromeClient;
 
   /// Constructs a [android_webview.WebViewClient].
