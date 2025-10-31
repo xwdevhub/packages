@@ -232,6 +232,10 @@ abstract class WebSettingsHostApi {
 
   void setAllowFileAccess(int instanceId, bool enabled);
 
+  void setAllowUniversalAccessFromFileURLs(int instanceId, bool enabled);
+
+  void setAllowFileAccessFromFileURLs(int instanceId, bool enabled);
+
   void setTextZoom(int instanceId, int textZoom);
 }
 

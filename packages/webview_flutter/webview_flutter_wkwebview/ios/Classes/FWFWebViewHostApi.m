@@ -113,6 +113,9 @@
                        error:(FlutterError *_Nullable __autoreleasing *_Nonnull)error {
   WKWebViewConfiguration *configuration = (WKWebViewConfiguration *)[self.instanceManager
       instanceForIdentifier:configurationIdentifier.longValue];
+  configuration.preferences.javaScriptEnabled = true;
+  [configuration.preferences setValue:@YES forKey:@"allowFileAccessFromFileURLs"];
+  [configuration setValue:@YES forKey:@"allowUniversalAccessFromFileURLs"];
   FWFWebView *webView = [[FWFWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)
                                             configuration:configuration
                                           binaryMessenger:self.binaryMessenger

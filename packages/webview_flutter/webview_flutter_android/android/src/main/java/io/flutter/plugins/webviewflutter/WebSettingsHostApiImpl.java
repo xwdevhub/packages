@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 package io.flutter.plugins.webviewflutter;
-import android.view.View;
+// import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
@@ -52,7 +52,7 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   @Override
   public void setDomStorageEnabled(Long instanceId, Boolean flag) {
     final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
-    webSettings.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+    // webSettings.setLayerType(View.LAYER_TYPE_HARDWARE, null);
     webSettings.setDomStorageEnabled(flag);
   }
 
@@ -120,6 +120,18 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   public void setAllowFileAccess(Long instanceId, Boolean enabled) {
     final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
     webSettings.setAllowFileAccess(enabled);
+  }
+
+  @Override
+  public void setAllowUniversalAccessFromFileURLs(Long instanceId, Boolean enabled) {
+    final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
+    webSettings.setAllowUniversalAccessFromFileURLs(enabled);
+  }
+
+  @Override
+  public void setAllowFileAccessFromFileURLs(Long instanceId, Boolean enabled) {
+    final WebSettings webSettings = (WebSettings) instanceManager.getInstance(instanceId);
+    webSettings.setAllowFileAccessFromFileURLs(enabled);
   }
 
   @Override

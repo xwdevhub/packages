@@ -1709,6 +1709,10 @@ public class GeneratedAndroidWebView {
 
     void setAllowFileAccess(@NonNull Long instanceId, @NonNull Boolean enabled);
 
+    void setAllowUniversalAccessFromFileURLs(@NonNull Long instanceId, @NonNull Boolean enabled);
+
+    void setAllowFileAccessFromFileURLs(@NonNull Long instanceId, @NonNull Boolean enabled);
+
     void setTextZoom(@NonNull Long instanceId, @NonNull Long textZoom);
 
     /** The codec used by WebSettingsHostApi. */
@@ -2146,6 +2150,74 @@ public class GeneratedAndroidWebView {
                     throw new NullPointerException("enabledArg unexpectedly null.");
                   }
                   api.setAllowFileAccess(
+                      (instanceIdArg == null) ? null : instanceIdArg.longValue(), enabledArg);
+                  wrapped.add(0, null);
+                } catch (Error | RuntimeException exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebSettingsHostApi.setAllowUniversalAccessFromFileURLs",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  assert args != null;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Boolean enabledArg = (Boolean) args.get(1);
+                  if (enabledArg == null) {
+                    throw new NullPointerException("enabledArg unexpectedly null.");
+                  }
+                  api.setAllowUniversalAccessFromFileURLs(
+                      (instanceIdArg == null) ? null : instanceIdArg.longValue(), enabledArg);
+                  wrapped.add(0, null);
+                } catch (Error | RuntimeException exception) {
+                  ArrayList<Object> wrappedError = wrapError(exception);
+                  wrapped = wrappedError;
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebSettingsHostApi.setAllowFileAccessFromFileURLs",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  assert args != null;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Boolean enabledArg = (Boolean) args.get(1);
+                  if (enabledArg == null) {
+                    throw new NullPointerException("enabledArg unexpectedly null.");
+                  }
+                  api.setAllowFileAccessFromFileURLs(
                       (instanceIdArg == null) ? null : instanceIdArg.longValue(), enabledArg);
                   wrapped.add(0, null);
                 } catch (Error | RuntimeException exception) {

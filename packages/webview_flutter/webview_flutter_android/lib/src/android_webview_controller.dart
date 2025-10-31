@@ -172,6 +172,8 @@ class AndroidWebViewController extends PlatformWebViewController {
         : Uri.file(absoluteFilePath).toString();
 
     _webView.settings.setAllowFileAccess(true);
+    _webView.settings.setAllowUniversalAccessFromFileURLs(true);
+    _webView.settings.setAllowFileAccessFromFileURLs(true);
     return _webView.loadUrl(url, <String, String>{});
   }
 

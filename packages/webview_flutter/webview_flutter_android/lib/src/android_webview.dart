@@ -599,6 +599,14 @@ class WebSettings extends JavaObject {
     return api.setAllowFileAccessFromInstance(this, enabled);
   }
 
+  Future<void> setAllowUniversalAccessFromFileURLs(bool enabled) {
+    return api.setAllowUniversalAccessFromFileURLsFromInstance(this, enabled);
+  }
+
+  Future<void> setAllowFileAccessFromFileURLs(bool enabled) {
+    return api.setAllowFileAccessFromFileURLsFromInstance(this, enabled);
+  }
+
   /// Sets the text zoom of the page in percent.
   ///
   /// The default is 100. See https://developer.android.com/reference/android/webkit/WebSettings#setTextZoom(int)
