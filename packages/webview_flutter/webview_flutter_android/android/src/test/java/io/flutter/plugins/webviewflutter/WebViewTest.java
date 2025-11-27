@@ -10,14 +10,19 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build;
+import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
+import io.flutter.embedding.android.FlutterView;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewFlutterApi;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.WebViewPlatformView;
@@ -48,19 +53,19 @@ public class WebViewTest {
 
   @Before
   public void setUp() {
-    testInstanceManager = InstanceManager.open(identifier -> {});
+    testInstanceManager = InstanceManager.create(identifier -> {});
 
     when(mockWebViewProxy.createWebView(mockContext, mockBinaryMessenger, testInstanceManager))
         .thenReturn(mockWebView);
     testHostApiImpl =
         new WebViewHostApiImpl(
-            testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext, null);
-    testHostApiImpl.create(0L, true);
+            testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext);
+    testHostApiImpl.create(0L);
   }
 
   @After
   public void tearDown() {
-    testInstanceManager.close();
+    testInstanceManager.stopFinalizationListener();
   }
 
   @Test
@@ -170,7 +175,7 @@ public class WebViewTest {
           }
 
           @Override
-          public void error(Throwable error) {}
+          public void error(@NonNull Throwable error) {}
         });
 
     @SuppressWarnings("unchecked")
@@ -310,16 +315,16 @@ public class WebViewTest {
           }
         };
 
-    testInstanceManager.addDartCreatedInstance(webView, 0);
+    testInstanceManager.addDartCreatedInstance(webView, 1);
     final JavaObjectHostApiImpl javaObjectHostApi = new JavaObjectHostApiImpl(testInstanceManager);
-    javaObjectHostApi.dispose(0L);
+    javaObjectHostApi.dispose(1L);
 
     assertTrue(destroyCalled[0]);
   }
 
   @Test
   public void flutterApiCreate() {
-    final InstanceManager instanceManager = InstanceManager.open(identifier -> {});
+    final InstanceManager instanceManager = InstanceManager.create(identifier -> {});
 
     final WebViewFlutterApiImpl flutterApiImpl =
         new WebViewFlutterApiImpl(mockBinaryMessenger, instanceManager);
@@ -333,6 +338,45 @@ public class WebViewTest {
         Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(mockWebView));
     verify(mockFlutterApi).create(eq(instanceIdentifier), any());
 
-    instanceManager.close();
+    instanceManager.stopFinalizationListener();
+  }
+
+  @Test
+  public void setImportantForAutofillForParentFlutterView() {
+    final WebViewPlatformView webView =
+        new WebViewPlatformView(
+            mockContext,
+            mockBinaryMessenger,
+            testInstanceManager,
+            (int version) -> version <= Build.VERSION_CODES.O);
+
+    final WebViewPlatformView webViewSpy = spy(webView);
+    final FlutterView mockFlutterView = mock(FlutterView.class);
+    when(webViewSpy.getParent()).thenReturn(mockFlutterView);
+
+    webViewSpy.onAttachedToWindow();
+
+    verify(mockFlutterView).setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_YES);
+  }
+
+  @Test
+  public void onScrollChanged() {
+    final InstanceManager instanceManager = InstanceManager.create(identifier -> {});
+
+    final WebViewFlutterApiImpl flutterApiImpl =
+        new WebViewFlutterApiImpl(mockBinaryMessenger, instanceManager);
+
+    final WebViewFlutterApi mockFlutterApi = mock(WebViewFlutterApi.class);
+    flutterApiImpl.setApi(mockFlutterApi);
+    flutterApiImpl.create(mockWebView, reply -> {});
+
+    flutterApiImpl.onScrollChanged(mockWebView, 0L, 1L, 2L, 3L, reply -> {});
+
+    final long instanceIdentifier =
+        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(mockWebView));
+    verify(mockFlutterApi)
+        .onScrollChanged(eq(instanceIdentifier), eq(0L), eq(1L), eq(2L), eq(3L), any());
+
+    instanceManager.stopFinalizationListener();
   }
 }
