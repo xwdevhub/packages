@@ -5,9 +5,13 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
+import android.view.ViewGroup;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -68,31 +72,40 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
     }
 
-    @Override
-    public void onShowCustomView(View view, CustomViewCallback callback) {
-        // 进入全屏模式
-        // 在这里你可以添加代码来处理全屏模式的UI和逻辑
-        // android.util.Log.i("进入全屏模式");
-        if(windowManager==null){
-            windowManager =(WindowManager) view.getContext().getSystemService(Context. WINDOW_SERVICE);
-        }
-        windowManager.addView(view, new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION));
-        view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        fullScreenPlayer = view;
+    // @Override
+    // public void onShowCustomView(View view, CustomViewCallback callback) {
+    //     // 进入全屏模式
+    //     // 在这里你可以添加代码来处理全屏模式的UI和逻辑
+    //     // android.util.Log.i("进入全屏模式");
+    //     if (windowManager == null) {
+    //         windowManager = (WindowManager) view.getContext().getSystemService(Context.WINDOW_SERVICE);
+    //     }
+    //     WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+    //             WindowManager.LayoutParams.MATCH_PARENT, // 设置宽度为匹配父容器
+    //             WindowManager.LayoutParams.MATCH_PARENT, // 设置高度为匹配父容器
+    //             WindowManager.LayoutParams.TYPE_APPLICATION, // 窗口类型
+    //             WindowManager.LayoutParams.FLAG_FULLSCREEN,// 使用全屏标志
+    //             PixelFormat.TRANSLUCENT // 透明度设置为半透明
+    //     );
+    //     params.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+    //     windowManager.addView(view, params);
+    //     WebViewFlutterPlugin.activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    //     view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    //     fullScreenPlayer = view;
+    // }
 
-    }
+    // private View fullScreenPlayer;
+    // private WindowManager windowManager;
 
-    private View fullScreenPlayer;
-    private WindowManager windowManager;
-
-    @Override
-    public void onHideCustomView() {
-        // 退出全屏模式
-        // 在这里你可以添加代码来处理退出全屏模式的UI和逻辑
-        // android.util.Log.i("退出全屏模式");
-        windowManager.removeViewImmediate(fullScreenPlayer);
-        fullScreenPlayer = null;
-    }
+    // @Override
+    // public void onHideCustomView() {
+    //     // 退出全屏模式
+    //     // 在这里你可以添加代码来处理退出全屏模式的UI和逻辑
+    //     // android.util.Log.i("退出全屏模式");
+    //     windowManager.removeViewImmediate(fullScreenPlayer);
+    //     WebViewFlutterPlugin.activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    //     fullScreenPlayer = null;
+    // }
 
     @Override
     public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
