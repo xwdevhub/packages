@@ -27,6 +27,9 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClient
 import java.util.Objects;
 import android.net.http.SslError;
 import android.webkit.SslErrorHandler;
+import android.view.View;
+import android.view.WindowManager;
+import android.content.Context;
 
 /**
  * Host api implementation for {@link WebChromeClient}.
@@ -63,6 +66,32 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @Override
     public void onProgressChanged(@NonNull WebView view, int progress) {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+    }
+
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+        // 进入全屏模式
+        // 在这里你可以添加代码来处理全屏模式的UI和逻辑
+        // android.util.Log.i("进入全屏模式");
+        if(windowManager==null){
+            windowManager =(WindowManager) view.getContext().getSystemService(Context. WINDOW_SERVICE);
+        }
+        windowManager.addView(view, new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION));
+        view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        fullScreenPlayer = view;
+
+    }
+
+    private View fullScreenPlayer;
+    private WindowManager windowManager;
+
+    @Override
+    public void onHideCustomView() {
+        // 退出全屏模式
+        // 在这里你可以添加代码来处理退出全屏模式的UI和逻辑
+        // android.util.Log.i("退出全屏模式");
+        windowManager.removeViewImmediate(fullScreenPlayer);
+        fullScreenPlayer = null;
     }
 
     @Override
