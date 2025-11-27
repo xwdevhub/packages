@@ -467,6 +467,12 @@ class AndroidWebViewController extends PlatformWebViewController {
   @override
   Future<void> clearCache() => _webView.clearCache(true);
 
+  Future<void> setHorizontalScrollBarEnabled(bool enabled) =>
+      _webView.setHorizontalScrollBarEnabled(enabled);
+
+  Future<void> setVerticalScrollBarEnabled(bool enabled) =>
+      _webView.setVerticalScrollBarEnabled(enabled);
+
   @override
   Future<void> clearLocalStorage() =>
       _androidWebViewParams.androidWebStorage.deleteAllData();

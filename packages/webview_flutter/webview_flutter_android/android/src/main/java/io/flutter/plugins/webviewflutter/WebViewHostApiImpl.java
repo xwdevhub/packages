@@ -321,6 +321,18 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
+  public void setHorizontalScrollBarEnabled(Long instanceId, Boolean includeDiskFiles) {
+      final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+      webView.setHorizontalScrollBarEnabled(includeDiskFiles);
+  }
+
+  @Override
+  public void setVerticalScrollBarEnabled(Long instanceId, Boolean includeDiskFiles) {
+      final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+      webView.setVerticalScrollBarEnabled(includeDiskFiles);
+  }
+
+  @Override
   public void evaluateJavascript(
       @NonNull Long instanceId,
       @NonNull String javascriptString,
