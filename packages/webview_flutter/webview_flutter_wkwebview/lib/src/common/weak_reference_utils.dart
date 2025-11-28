@@ -5,11 +5,11 @@
 /// Helper method for creating callbacks methods with a weak reference.
 ///
 /// Example:
-/// ```
+/// ```dart
 /// final JavascriptChannelRegistry javascriptChannelRegistry = ...
 ///
 /// final WKScriptMessageHandler handler = WKScriptMessageHandler(
-///   didReceiveScriptMessage: withWeakRefenceTo(
+///   didReceiveScriptMessage: withWeakReferenceTo(
 ///     javascriptChannelRegistry,
 ///     (WeakReference<JavascriptChannelRegistry> weakReference) {
 ///       return (
@@ -18,14 +18,14 @@
 ///       ) {
 ///         weakReference.target?.onJavascriptChannelMessage(
 ///           message.name,
-///           message.body!.toString(),
+///           message.body.toString(),
 ///         );
 ///       };
 ///     },
 ///   ),
 /// );
 /// ```
-S withWeakRefenceTo<T extends Object, S extends Object>(
+S withWeakReferenceTo<T extends Object, S extends Object>(
   T reference,
   S Function(WeakReference<T> weakReference) onCreate,
 ) {
