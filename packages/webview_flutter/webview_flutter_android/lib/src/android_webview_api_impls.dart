@@ -598,6 +598,28 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
+  Future<void> setAllowUniversalAccessFromFileURLsFromInstance(
+    WebSettings instance,
+    bool enabled,
+  ) {
+    return setAllowUniversalAccessFromFileURLs(
+      instanceManager.getIdentifier(instance)!,
+      enabled,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setAllowFileAccessFromFileURLsFromInstance(
+    WebSettings instance,
+    bool enabled,
+  ) {
+    return setAllowFileAccessFromFileURLs(
+      instanceManager.getIdentifier(instance)!,
+      enabled,
+    );
+  }
+
+  /// Helper method to convert instances ids to objects.
   Future<String> getUserAgentStringFromInstance(WebSettings instance) {
     return getUserAgentString(instanceManager.getIdentifier(instance)!);
   }

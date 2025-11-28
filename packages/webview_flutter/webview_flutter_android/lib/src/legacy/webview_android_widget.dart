@@ -278,6 +278,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         : 'file://$absoluteFilePath';
 
     webView.settings.setAllowFileAccess(true);
+    webView.settings.setAllowUniversalAccessFromFileURLs(true);
+    webView.settings.setAllowFileAccessFromFileURLs(true);
     return webView.loadUrl(url, <String, String>{});
   }
 
