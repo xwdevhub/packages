@@ -1090,6 +1090,25 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   }
 
   @override
+  void onReceivedTitle(int instanceId, int webViewInstanceId, String title) {
+    final WebChromeClient? instance = instanceManager
+        .getInstanceWithWeakReference(instanceId) as WebChromeClient?;
+    final WebView? webViewInstance = instanceManager
+        .getInstanceWithWeakReference(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebChromeClient with instanceId: $instanceId',
+    );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    if (instance!.onReceivedTitle != null) {
+      instance.onReceivedTitle!(webViewInstance!, title);
+    }
+  }
+
+  @override
   void onGeolocationPermissionsShowPrompt(
       int instanceId, int paramsInstanceId, String origin) {
     final WebChromeClient instance =

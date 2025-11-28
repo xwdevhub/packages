@@ -1099,6 +1099,7 @@ class WebChromeClient extends JavaObject {
     this.onJsAlert,
     this.onJsConfirm,
     this.onJsPrompt,
+    this.onReceivedTitle,
     @visibleForTesting super.binaryMessenger,
     @visibleForTesting super.instanceManager,
   }) : super.detached() {
@@ -1126,6 +1127,7 @@ class WebChromeClient extends JavaObject {
     this.onJsPrompt,
     super.binaryMessenger,
     super.instanceManager,
+    this.onReceivedTitle,
   }) : super.detached();
 
   /// Pigeon Host Api implementation for [WebChromeClient].
@@ -1322,6 +1324,11 @@ class WebChromeClient extends JavaObject {
     return api.setSynchronousReturnValueForOnJsPromptFromInstance(this, value);
   }
 
+  final Function(
+    WebView webView,
+    String title,
+  )? onReceivedTitle;
+
   @override
   WebChromeClient copy() {
     return WebChromeClient.detached(
@@ -1338,6 +1345,7 @@ class WebChromeClient extends JavaObject {
       onJsPrompt: onJsPrompt,
       binaryMessenger: _api.binaryMessenger,
       instanceManager: _api.instanceManager,
+      onReceivedTitle: onReceivedTitle,
     );
   }
 }

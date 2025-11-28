@@ -197,6 +197,14 @@ class AndroidWebViewController extends PlatformWebViewController {
         };
       },
     ),
+    onReceivedTitle: withWeakReferenceTo(this,
+        (WeakReference<AndroidWebViewController> weakReference) {
+      return (android_webview.WebView webView, String title) async {
+        if (weakReference.target?._onReceivedTitle != null) {
+          return weakReference.target!._onReceivedTitle!(title);
+        }
+      };
+    }),
     onConsoleMessage: withWeakReferenceTo(
       this,
       (WeakReference<AndroidWebViewController> weakReference) {
@@ -328,6 +336,8 @@ class AndroidWebViewController extends PlatformWebViewController {
 
   Future<List<String>> Function(FileSelectorParams)?
       _onShowFileSelectorCallback;
+
+  Function(String)? _onReceivedTitle;
 
   OnGeolocationPermissionsShowPrompt? _onGeolocationPermissionsShowPrompt;
 
@@ -616,6 +626,12 @@ class AndroidWebViewController extends PlatformWebViewController {
     return _webChromeClient.setSynchronousReturnValueForOnShowFileChooser(
       onShowFileSelector != null,
     );
+  }
+
+  void setOnReceivedTitle(
+    Function(String text)? onReceivedTitle,
+  ) {
+    _onReceivedTitle = onReceivedTitle;
   }
 
   /// Sets a callback that notifies the host application that web content is

@@ -11,6 +11,7 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -70,6 +71,19 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @Override
     public void onProgressChanged(@NonNull WebView view, int progress) {
       flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+    }
+
+    @Override
+    public void onReceivedTitle(WebView view, String title) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          flutterApi.onReceivedTitle(
+                  this,
+                  view,
+                  title,
+                  reply -> {
+
+                  });
+      }
     }
 
     // @Override

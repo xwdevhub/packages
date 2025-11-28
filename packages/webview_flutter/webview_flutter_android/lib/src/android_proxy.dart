@@ -37,6 +37,8 @@ class AndroidWebViewProxy {
       android_webview.WebView webView,
       android_webview.FileChooserParams params,
     )? onShowFileChooser,
+    void Function(android_webview.WebView webView, String title)?
+        onReceivedTitle,
     void Function(
       android_webview.WebChromeClient instance,
       android_webview.PermissionRequest request,
