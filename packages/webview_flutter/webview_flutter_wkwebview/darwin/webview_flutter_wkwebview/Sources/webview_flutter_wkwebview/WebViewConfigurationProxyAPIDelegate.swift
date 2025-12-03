@@ -12,7 +12,9 @@ class WebViewConfigurationProxyAPIDelegate: PigeonApiDelegateWKWebViewConfigurat
   func pigeonDefaultConstructor(pigeonApi: PigeonApiWKWebViewConfiguration) throws
     -> WKWebViewConfiguration
   {
-    return WKWebViewConfiguration()
+    let configuration = WKWebViewConfiguration()
+    configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+    return configuration
   }
 
   func setUserContentController(
