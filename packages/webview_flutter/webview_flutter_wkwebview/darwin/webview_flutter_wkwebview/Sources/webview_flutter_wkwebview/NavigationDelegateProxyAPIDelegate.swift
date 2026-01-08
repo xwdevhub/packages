@@ -237,20 +237,31 @@ public class NavigationDelegateImpl: NSObject, WKNavigationDelegate {
         ->
         Void
     ) {
-      registrar.dispatchOnMainThread { onFailure in
-        self.api.didReceiveAuthenticationChallenge(
-          pigeonInstance: self, webView: webView, challenge: challenge
-        ) { result in
-          DispatchQueue.main.async {
-            switch result {
-            case .success(let response):
-              completionHandler(response.disposition, response.credential)
-            case .failure(let error):
-              completionHandler(.cancelAuthenticationChallenge, nil)
-              onFailure("WKNavigationDelegate.didReceiveAuthenticationChallenge", error)
-            }
-          }
-        }
+      // registrar.dispatchOnMainThread { onFailure in
+      //   self.api.didReceiveAuthenticationChallenge(
+      //     pigeonInstance: self, webView: webView, challenge: challenge
+      //   ) { result in
+      //     DispatchQueue.main.async {
+      //       switch result {
+      //       case .success(let response):
+      //         completionHandler(response.disposition, response.credential)
+      //       case .failure(let error):
+      //         completionHandler(.cancelAuthenticationChallenge, nil)
+      //         onFailure("WKNavigationDelegate.didReceiveAuthenticationChallenge", error)
+      //       }
+      //     }
+      //   }
+      // }
+      guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else {
+          completionHandler(.performDefaultHandling, nil)
+          return
+      }
+
+      if let serverTrust = challenge.protectionSpace.serverTrust {
+          let credential = URLCredential(trust: serverTrust)
+          completionHandler(.useCredential, credential)
+      } else {
+          completionHandler(.performDefaultHandling, nil)
       }
     }
   #else
@@ -259,20 +270,31 @@ public class NavigationDelegateImpl: NSObject, WKNavigationDelegate {
       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) ->
         Void
     ) {
-      registrar.dispatchOnMainThread { onFailure in
-        self.api.didReceiveAuthenticationChallenge(
-          pigeonInstance: self, webView: webView, challenge: challenge
-        ) { result in
-          DispatchQueue.main.async {
-            switch result {
-            case .success(let response):
-              completionHandler(response.disposition, response.credential)
-            case .failure(let error):
-              completionHandler(.cancelAuthenticationChallenge, nil)
-              onFailure("WKNavigationDelegate.didReceiveAuthenticationChallenge", error)
-            }
-          }
-        }
+      // registrar.dispatchOnMainThread { onFailure in
+      //   self.api.didReceiveAuthenticationChallenge(
+      //     pigeonInstance: self, webView: webView, challenge: challenge
+      //   ) { result in
+      //     DispatchQueue.main.async {
+      //       switch result {
+      //       case .success(let response):
+      //         completionHandler(response.disposition, response.credential)
+      //       case .failure(let error):
+      //         completionHandler(.cancelAuthenticationChallenge, nil)
+      //         onFailure("WKNavigationDelegate.didReceiveAuthenticationChallenge", error)
+      //       }
+      //     }
+      //   }
+      // }
+      guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else {
+          completionHandler(.performDefaultHandling, nil)
+          return
+      }
+
+      if let serverTrust = challenge.protectionSpace.serverTrust {
+          let credential = URLCredential(trust: serverTrust)
+          completionHandler(.useCredential, credential)
+      } else {
+          completionHandler(.performDefaultHandling, nil)
       }
     }
   #endif
