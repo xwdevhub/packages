@@ -274,7 +274,7 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
       covariant AndroidNavigationDelegate handler) async {
     _currentNavigationDelegate = handler;
-    handler._rawLoadUrl = _webView.loadUrl;
+    // handler._rawLoadUrl = _webView.loadUrl;
     handler.setOnLoadRequest(loadRequest);
     _webView.setWebViewClient(handler.androidWebViewClient);
     _webView.setDownloadListener(handler.androidDownloadListener);
@@ -873,43 +873,43 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
   LoadRequestCallback? _onLoadRequest;
-  Future<void> Function(String, Map<String, String>)? _rawLoadUrl;
+  // Future<void> Function(String, Map<String, String>)? _rawLoadUrl;
 
   void _handleNavigation(
     String url, {
     required bool isForMainFrame,
     Map<String, String> headers = const <String, String>{},
   }) {
-    final LoadRequestCallback? onLoadRequest = _onLoadRequest;
-    final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
+    // final LoadRequestCallback? onLoadRequest = _onLoadRequest;
+    // final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
 
-    if (onNavigationRequest == null || onLoadRequest == null) {
-      return;
-    }
+    // if (onNavigationRequest == null || onLoadRequest == null) {
+    //   return;
+    // }
 
-    final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
-      NavigationRequest(
-        url: url,
-        isMainFrame: isForMainFrame,
-      ),
-    );
+    // final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
+    //   NavigationRequest(
+    //     url: url,
+    //     isMainFrame: isForMainFrame,
+    //   ),
+    // );
 
-    if (returnValue is NavigationDecision &&
-        returnValue == NavigationDecision.navigate) {
-      _rawLoadUrl?.call(url, headers) ??
-          onLoadRequest(
-            LoadRequestParams(uri: Uri.parse(url), headers: headers),
-          );
-    } else if (returnValue is Future<NavigationDecision>) {
-      returnValue.then((NavigationDecision shouldLoadUrl) {
-        if (shouldLoadUrl == NavigationDecision.navigate) {
-          _rawLoadUrl?.call(url, headers) ??
-              onLoadRequest(
-                LoadRequestParams(uri: Uri.parse(url), headers: headers),
-              );
-        }
-      });
-    }
+    // if (returnValue is NavigationDecision &&
+    //     returnValue == NavigationDecision.navigate) {
+    //   _rawLoadUrl?.call(url, headers) ??
+    //       onLoadRequest(
+    //         LoadRequestParams(uri: Uri.parse(url), headers: headers),
+    //       );
+    // } else if (returnValue is Future<NavigationDecision>) {
+    //   returnValue.then((NavigationDecision shouldLoadUrl) {
+    //     if (shouldLoadUrl == NavigationDecision.navigate) {
+    //       _rawLoadUrl?.call(url, headers) ??
+    //           onLoadRequest(
+    //             LoadRequestParams(uri: Uri.parse(url), headers: headers),
+    //           );
+    //     }
+    //   });
+    // }
   }
 
   /// Invoked when loading the url after a navigation request is approved.
@@ -924,7 +924,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     NavigationRequestCallback onNavigationRequest,
   ) async {
     _onNavigationRequest = onNavigationRequest;
-    _webViewClient.setSynchronousReturnValueForShouldOverrideUrlLoading(true);
+    _webViewClient.setSynchronousReturnValueForShouldOverrideUrlLoading(false);
   }
 
   @override
