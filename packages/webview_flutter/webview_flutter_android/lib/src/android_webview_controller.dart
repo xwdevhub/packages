@@ -493,7 +493,7 @@ class AndroidWebViewController extends PlatformWebViewController {
   Future<void> setPlatformNavigationDelegate(
       covariant AndroidNavigationDelegate handler) async {
     _currentNavigationDelegate = handler;
-    // handler._rawLoadUrl = _webView.loadUrl;
+    handler._rawLoadUrl = _webView.loadUrl;
     await Future.wait(<Future<void>>[
       handler.setOnLoadRequest(loadRequest),
       _webView.setWebViewClient(handler.androidWebViewClient),
@@ -1447,7 +1447,12 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
         int contentLength,
       ) {
         if (weakThis.target != null) {
-          weakThis.target?._handleNavigation(url, isForMainFrame: true);
+          // 下载链接仅通知上层拦截决策，不允许手动 loadUrl，
+          // 避免 WebView 加载后再次触发 onDownloadStart 形成循环。
+          weakThis.target?._handleNavigation(
+            url,
+            isForMainFrame: true,
+          );
         }
       },
     );
@@ -1490,7 +1495,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   WebResourceErrorCallback? _onWebResourceError;
   NavigationRequestCallback? _onNavigationRequest;
   LoadRequestCallback? _onLoadRequest;
-  // Future<void> Function(String, Map<String, String>)? _rawLoadUrl;
+  Future<void> Function(String, Map<String, String>)? _rawLoadUrl;
   UrlChangeCallback? _onUrlChange;
   HttpAuthRequestCallback? _onHttpAuthRequest;
 
@@ -1499,41 +1504,68 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
     required bool isForMainFrame,
     Map<String, String> headers = const <String, String>{},
   }) {
-    // final LoadRequestCallback? onLoadRequest = _onLoadRequest;
-    // final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
+    final NavigationRequestCallback? onNavigationRequest = _onNavigationRequest;
 
-    // // The client is only allowed to stop navigations that target the main frame because
-    // // overridden URLs are passed to `loadUrl` and `loadUrl` cannot load a subframe.
-    // if (!isForMainFrame ||
-    //     onNavigationRequest == null ||
-    //     onLoadRequest == null) {
-    //   return;
-    // }
+    if (onNavigationRequest == null) {
+      return;
+    }
 
-    // final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
-    //   NavigationRequest(
-    //     url: url,
-    //     isMainFrame: isForMainFrame,
-    //   ),
-    // );
+    final FutureOr<NavigationDecision> returnValue = onNavigationRequest(
+      NavigationRequest(
+        url: url,
+        isMainFrame: isForMainFrame,
+      ),
+    );
 
-    // if (returnValue is NavigationDecision &&
-    //     returnValue == NavigationDecision.navigate) {
-    //   _rawLoadUrl?.call(url, headers) ??
-    //       onLoadRequest(
-    //         LoadRequestParams(uri: Uri.parse(url), headers: headers),
-    //       );
-    // } else if (returnValue is Future<NavigationDecision>) {
-    //   returnValue.then((NavigationDecision shouldLoadUrl) {
-    //     if (shouldLoadUrl == NavigationDecision.navigate) {
-    //       _rawLoadUrl?.call(url, headers) ??
-    //           onLoadRequest(
-    //             LoadRequestParams(uri: Uri.parse(url), headers: headers),
-    //           );
-    //     }
-    //   });
-    // }
+    void _loadUrl() {
+      // 直接调用原生 loadUrl，避免经过 Uri.parse 重新编码
+      // 确保含有 # 等特殊字符的 URL 不被改写
+      if (_rawLoadUrl != null) {
+        _rawLoadUrl!(url, headers);
+      } else {
+        _onLoadRequest?.call(
+          LoadRequestParams(uri: Uri.parse(url), headers: headers),
+        );
+      }
+    }
+
+    void _performNavigate() {
+      if (_shouldLoadUrlManually(url)) {
+        _loadUrl();
+      }
+    }
+
+    if (returnValue is NavigationDecision &&
+        returnValue == NavigationDecision.navigate) {
+      _performNavigate();
+    } else if (returnValue is Future<NavigationDecision>) {
+      returnValue.then((NavigationDecision shouldLoadUrl) {
+        if (shouldLoadUrl == NavigationDecision.navigate) {
+          _performNavigate();
+        }
+      });
+    }
   }
+
+  bool _shouldLoadUrlManually(String url) {
+    final Uri? uri = Uri.tryParse(url);
+    final String scheme = uri?.scheme.toLowerCase() ?? '';
+
+    return scheme.isNotEmpty && !_webViewHandledSchemes.contains(scheme);
+  }
+
+  static const Set<String> _webViewHandledSchemes = <String>{
+    'about',
+    'blob',
+    'content',
+    'data',
+    'file',
+    'ftp',
+    'ftps',
+    'http',
+    'https',
+    'javascript',
+  };
 
   /// Invoked when loading the url after a navigation request is approved.
   Future<void> setOnLoadRequest(
@@ -1548,7 +1580,7 @@ class AndroidNavigationDelegate extends PlatformNavigationDelegate {
   ) async {
     _onNavigationRequest = onNavigationRequest;
     return _webViewClient
-        .setSynchronousReturnValueForShouldOverrideUrlLoading(false);
+        .setSynchronousReturnValueForShouldOverrideUrlLoading(true);
   }
 
   @override

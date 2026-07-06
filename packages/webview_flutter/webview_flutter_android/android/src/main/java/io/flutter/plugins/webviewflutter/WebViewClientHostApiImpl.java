@@ -7,6 +7,7 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.webkit.HttpAuthHandler;
@@ -90,10 +91,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     public boolean shouldOverrideUrlLoading(
         @NonNull WebView view, @NonNull WebResourceRequest request) {
       flutterApi.requestLoading(this, view, request, reply -> {});
-
-      // The client is only allowed to stop navigations that target the main frame because
-      // overridden URLs are passed to `loadUrl` and `loadUrl` cannot load a subframe.
-      return request.isForMainFrame() && returnValueForShouldOverrideUrlLoading;
+      return shouldOverrideUrlLoading(request.getUrl().toString());
     }
 
     // Legacy codepath for < 24; newer versions use the variant above.
@@ -101,7 +99,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Override
     public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull String url) {
       flutterApi.urlLoading(this, view, url, reply -> {});
-      return returnValueForShouldOverrideUrlLoading;
+      return shouldOverrideUrlLoading(url);
     }
 
     @Override
@@ -129,6 +127,32 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     /** Sets return value for {@link #shouldOverrideUrlLoading}. */
     public void setReturnValueForShouldOverrideUrlLoading(boolean value) {
       returnValueForShouldOverrideUrlLoading = value;
+    }
+
+    private boolean shouldOverrideUrlLoading(String url) {
+      return returnValueForShouldOverrideUrlLoading && !isWebViewHandledUrl(url);
+    }
+
+    private boolean isWebViewHandledUrl(String url) {
+      String scheme = Uri.parse(url).getScheme();
+      if (scheme == null) {
+        return false;
+      }
+      switch (scheme.toLowerCase()) {
+        case "about":
+        case "blob":
+        case "content":
+        case "data":
+        case "file":
+        case "ftp":
+        case "ftps":
+        case "http":
+        case "https":
+        case "javascript":
+          return true;
+        default:
+          return false;
+      }
     }
 
     @Override
@@ -212,10 +236,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     public boolean shouldOverrideUrlLoading(
         @NonNull WebView view, @NonNull WebResourceRequest request) {
       flutterApi.requestLoading(this, view, request, reply -> {});
-
-      // The client is only allowed to stop navigations that target the main frame because
-      // overridden URLs are passed to `loadUrl` and `loadUrl` cannot load a subframe.
-      return request.isForMainFrame() && returnValueForShouldOverrideUrlLoading;
+      return shouldOverrideUrlLoading(request.getUrl().toString());
     }
 
     // Legacy codepath for < Lollipop; newer versions use the variant above.
@@ -223,7 +244,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Override
     public boolean shouldOverrideUrlLoading(@NonNull WebView view, @NonNull String url) {
       flutterApi.urlLoading(this, view, url, reply -> {});
-      return returnValueForShouldOverrideUrlLoading;
+      return shouldOverrideUrlLoading(url);
     }
 
     @Override
@@ -252,6 +273,32 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     /** Sets return value for {@link #shouldOverrideUrlLoading}. */
     public void setReturnValueForShouldOverrideUrlLoading(boolean value) {
       returnValueForShouldOverrideUrlLoading = value;
+    }
+
+    private boolean shouldOverrideUrlLoading(String url) {
+      return returnValueForShouldOverrideUrlLoading && !isWebViewHandledUrl(url);
+    }
+
+    private boolean isWebViewHandledUrl(String url) {
+      String scheme = Uri.parse(url).getScheme();
+      if (scheme == null) {
+        return false;
+      }
+      switch (scheme.toLowerCase()) {
+        case "about":
+        case "blob":
+        case "content":
+        case "data":
+        case "file":
+        case "ftp":
+        case "ftps":
+        case "http":
+        case "https":
+        case "javascript":
+          return true;
+        default:
+          return false;
+      }
     }
   }
 
