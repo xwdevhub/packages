@@ -3,7 +3,7 @@ import UIKit
 import AudioToolbox
 
 public class SwiftVibratePlugin: NSObject, FlutterPlugin, VibrateApi {
-  private let isDevice = TARGET_OS_SIMULATOR == 0
+  // private let isDevice = TARGET_OS_SIMULATOR == 0
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let messenger : FlutterBinaryMessenger = registrar.messenger()
@@ -12,7 +12,7 @@ public class SwiftVibratePlugin: NSObject, FlutterPlugin, VibrateApi {
   }
 
   func canVibrate() throws -> Bool {
-      return isDevice
+      return true
   }
 
   func vibrate(duration: Int64) throws {
