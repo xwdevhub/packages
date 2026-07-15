@@ -2,8 +2,8 @@ name: flutter_vibrate
 description: A Haptic Feedback and Vibration plugin.
 version: 1.4.0
 environment:
-  sdk: ^3.10.4
-  flutter: ^3.38.5
+  sdk: ^3.5.3
+  flutter: ^3.24.3
 maintainer: Rody Davis (@rodydavis)
 homepage: https://github.com/rodydavis/packages.dart
 repository: https://github.com/rodydavis/packages.dart
