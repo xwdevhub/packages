@@ -689,6 +689,10 @@ abstract class WKWebViewConfiguration extends NSObject {
   /// cached data objects.
   void setWebsiteDataStore(WKWebsiteDataStore dataStore);
 
+  /// Selects a persistent website data store by UUID before creating a web
+  /// view. This is supported on iOS 17.0 and macOS 14.0 and later.
+  void setWebsiteDataStoreIdentifier(String identifier);
+
   /// The object you use to get and set the site’s cookies and to track the
   /// cached data objects.
   WKWebsiteDataStore getWebsiteDataStore();

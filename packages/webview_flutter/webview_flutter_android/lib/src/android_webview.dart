@@ -134,10 +134,11 @@ class WebView extends View {
   /// Constructs a new WebView.
   WebView({
     this.onScrollChanged,
+    this.profileName,
     @visibleForTesting super.binaryMessenger,
     @visibleForTesting super.instanceManager,
   }) : super.detached() {
-    api.createFromInstance(this);
+    profileBindingResult = api.createFromInstance(this, profileName);
   }
 
   /// Constructs a [WebView] without creating the associated Java object.
@@ -147,6 +148,7 @@ class WebView extends View {
   @protected
   WebView.detached({
     this.onScrollChanged,
+    this.profileName,
     super.binaryMessenger,
     super.instanceManager,
   }) : super.detached();
@@ -169,6 +171,12 @@ class WebView extends View {
     int oldLeft,
     int oldTop,
   )? onScrollChanged;
+
+  /// The requested AndroidX WebKit profile name.
+  final String? profileName;
+
+  /// Whether the native WebView was created with [profileName].
+  late final Future<bool> profileBindingResult;
 
   /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
   ///

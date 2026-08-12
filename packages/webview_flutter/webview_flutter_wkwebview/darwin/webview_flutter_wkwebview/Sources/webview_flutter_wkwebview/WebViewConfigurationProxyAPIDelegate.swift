@@ -37,6 +37,24 @@ class WebViewConfigurationProxyAPIDelegate: PigeonApiDelegateWKWebViewConfigurat
     pigeonInstance.websiteDataStore = dataStore
   }
 
+  func setWebsiteDataStoreIdentifier(
+    pigeonApi: PigeonApiWKWebViewConfiguration, pigeonInstance: WKWebViewConfiguration,
+    identifier: String
+  ) throws {
+    guard let uuid = UUID(uuidString: identifier) else {
+      throw PigeonError(
+        code: "FWFInvalidWebsiteDataStoreIdentifier",
+        message: "The website data store identifier must be a valid UUID.",
+        details: nil)
+    }
+
+    // WKWebsiteDataStore.init(forIdentifier:)
+    // Ref: https://developer.apple.com/documentation/webkit/wkwebsitedatastore/init(foridentifier:)
+    if #available(iOS 17.0, macOS 14.0, *) {
+      pigeonInstance.websiteDataStore = WKWebsiteDataStore(forIdentifier: uuid)
+    }
+  }
+
   func getWebsiteDataStore(
     pigeonApi: PigeonApiWKWebViewConfiguration, pigeonInstance: WKWebViewConfiguration
   ) throws -> WKWebsiteDataStore {

@@ -644,6 +644,7 @@ class CapturingWebChromeClient extends android_webview.WebChromeClient {
   CapturingWebChromeClient({
     super.onProgressChanged,
     super.onShowFileChooser,
+    super.onReceivedTitle,
     super.onGeolocationPermissionsShowPrompt,
     super.onGeolocationPermissionsHidePrompt,
     super.onShowCustomView,

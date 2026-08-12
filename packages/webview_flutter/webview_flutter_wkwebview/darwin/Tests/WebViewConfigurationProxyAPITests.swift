@@ -51,6 +51,23 @@ class WebViewConfigurationProxyAPITests: XCTestCase {
     XCTAssertEqual(instance.websiteDataStore, dataStore)
   }
 
+  @MainActor func testSetWebsiteDataStoreIdentifier() throws {
+    guard #available(iOS 17.0, macOS 14.0, *) else {
+      return
+    }
+    let registrar = TestProxyApiRegistrar()
+    let api = registrar.apiDelegate.pigeonApiWKWebViewConfiguration(registrar)
+    let instance = WKWebViewConfiguration()
+    let identifier = UUID(uuidString: "89b9a7d6-62d4-5d73-b5d1-6d884f1f5846")!
+
+    try api.pigeonDelegate.setWebsiteDataStoreIdentifier(
+      pigeonApi: api,
+      pigeonInstance: instance,
+      identifier: identifier.uuidString)
+
+    XCTAssertEqual(instance.websiteDataStore.identifier, identifier)
+  }
+
   @MainActor func testGetWebsiteDataStore() {
     let registrar = TestProxyApiRegistrar()
     let api = registrar.apiDelegate.pigeonApiWKWebViewConfiguration(registrar)

@@ -291,6 +291,28 @@ class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<void> setAllowUniversalAccessFromFileURLs(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setAllowUniversalAccessFromFileURLs,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setAllowFileAccessFromFileURLs(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setAllowFileAccessFromFileURLs,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<void> setTextZoom(int? textZoom) => (super.noSuchMethod(
         Invocation.method(
           #setTextZoom,
@@ -381,6 +403,22 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           Invocation.getter(#settings),
         ),
       ) as _i2.WebSettings);
+
+  @override
+  _i5.Future<bool> get profileBindingResult => (super.noSuchMethod(
+        Invocation.getter(#profileBindingResult),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  set profileBindingResult(_i5.Future<bool>? _profileBindingResult) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #profileBindingResult,
+          _profileBindingResult,
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i5.Future<void> loadData({
@@ -522,6 +560,28 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         Invocation.method(
           #clearCache,
           [includeDiskFiles],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setHorizontalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setHorizontalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setVerticalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setVerticalScrollBarEnabled,
+          [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

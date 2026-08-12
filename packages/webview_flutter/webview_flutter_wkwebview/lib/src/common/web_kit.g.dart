@@ -3503,6 +3503,37 @@ class WKWebViewConfiguration extends NSObject {
     }
   }
 
+  /// Selects a persistent website data store by UUID before creating a web
+  /// view. This is supported on iOS 17.0 and macOS 14.0 and later.
+  Future<void> setWebsiteDataStoreIdentifier(String identifier) async {
+    final _PigeonInternalProxyApiBaseCodec pigeonChannelCodec =
+        _pigeonVar_codecWKWebViewConfiguration;
+    final BinaryMessenger? pigeonVar_binaryMessenger = pigeon_binaryMessenger;
+    const String pigeonVar_channelName =
+        'dev.flutter.pigeon.webview_flutter_wkwebview.WKWebViewConfiguration.setWebsiteDataStoreIdentifier';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[this, identifier]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
   /// The object you use to get and set the site’s cookies and to track the
   /// cached data objects.
   Future<WKWebsiteDataStore> getWebsiteDataStore() async {

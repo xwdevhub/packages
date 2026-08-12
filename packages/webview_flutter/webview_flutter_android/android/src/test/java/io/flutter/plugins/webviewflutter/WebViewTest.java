@@ -55,17 +55,38 @@ public class WebViewTest {
   public void setUp() {
     testInstanceManager = InstanceManager.create(identifier -> {});
 
-    when(mockWebViewProxy.createWebView(mockContext, mockBinaryMessenger, testInstanceManager))
+    when(
+            mockWebViewProxy.createWebView(
+                mockContext, mockBinaryMessenger, testInstanceManager, null))
         .thenReturn(mockWebView);
+    when(mockWebView.isProfileBound()).thenReturn(false);
     testHostApiImpl =
         new WebViewHostApiImpl(
             testInstanceManager, mockBinaryMessenger, mockWebViewProxy, mockContext);
-    testHostApiImpl.create(0L);
+    testHostApiImpl.create(0L, null);
   }
 
   @After
   public void tearDown() {
     testInstanceManager.stopFinalizationListener();
+  }
+
+  @Test
+  public void createWithProfile() {
+    final WebViewPlatformView profiledWebView = mock(WebViewPlatformView.class);
+    when(
+            mockWebViewProxy.createWebView(
+                mockContext,
+                mockBinaryMessenger,
+                testInstanceManager,
+                "workbench_profile"))
+        .thenReturn(profiledWebView);
+    when(profiledWebView.isProfileBound()).thenReturn(true);
+
+    assertTrue(testHostApiImpl.create(1L, "workbench_profile"));
+    verify(mockWebViewProxy)
+        .createWebView(
+            mockContext, mockBinaryMessenger, testInstanceManager, "workbench_profile");
   }
 
   @Test

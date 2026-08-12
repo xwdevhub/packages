@@ -146,6 +146,12 @@ class MockAndroidWebViewController extends _i1.Mock
   }
 
   @override
+  _i5.Future<bool> get profileBindingResult => (super.noSuchMethod(
+        Invocation.getter(#profileBindingResult),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
   int get webViewIdentifier => (super.noSuchMethod(
         Invocation.getter(#webViewIdentifier),
         returnValue: 0,
@@ -274,6 +280,28 @@ class MockAndroidWebViewController extends _i1.Mock
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<void> setHorizontalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setHorizontalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setVerticalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setVerticalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<void> clearLocalStorage() => (super.noSuchMethod(
         Invocation.method(
           #clearLocalStorage,
@@ -290,6 +318,24 @@ class MockAndroidWebViewController extends _i1.Mock
         Invocation.method(
           #setPlatformNavigationDelegate,
           [handler],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setDownloadListener(
+          dynamic Function(
+            String,
+            String,
+            String,
+            String,
+            int,
+          )? onDownloadStart) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setDownloadListener,
+          [onDownloadStart],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
@@ -490,6 +536,16 @@ class MockAndroidWebViewController extends _i1.Mock
       ) as _i5.Future<void>);
 
   @override
+  void setOnReceivedTitle(dynamic Function(String)? onReceivedTitle) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setOnReceivedTitle,
+          [onReceivedTitle],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i5.Future<void> setOnPlatformPermissionRequest(
           void Function(_i3.PlatformWebViewPermissionRequest)?
               onPermissionRequest) =>
@@ -593,6 +649,26 @@ class MockAndroidWebViewController extends _i1.Mock
         Invocation.method(
           #setOnJavaScriptTextInputDialog,
           [onJavaScriptTextInputDialog],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  bool supportsSetScrollBarsEnabled() => (super.noSuchMethod(
+        Invocation.method(
+          #supportsSetScrollBarsEnabled,
+          [],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i5.Future<void> setOverScrollMode(_i3.WebViewOverScrollMode? mode) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setOverScrollMode,
+          [mode],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

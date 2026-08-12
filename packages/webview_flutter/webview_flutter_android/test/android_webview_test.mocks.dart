@@ -778,6 +778,38 @@ class MockTestWebSettingsHostApi extends _i1.Mock
       );
 
   @override
+  void setAllowUniversalAccessFromFileURLs(
+    int? instanceId,
+    bool? enabled,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setAllowUniversalAccessFromFileURLs,
+          [
+            instanceId,
+            enabled,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void setAllowFileAccessFromFileURLs(
+    int? instanceId,
+    bool? enabled,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setAllowFileAccessFromFileURLs,
+          [
+            instanceId,
+            enabled,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   void setTextZoom(
     int? instanceId,
     int? textZoom,
@@ -882,13 +914,20 @@ class MockTestWebViewHostApi extends _i1.Mock
   }
 
   @override
-  void create(int? instanceId) => super.noSuchMethod(
+  bool create(
+    int? instanceId,
+    String? profileName,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
           #create,
-          [instanceId],
+          [
+            instanceId,
+            profileName,
+          ],
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: false,
+      ) as bool);
 
   @override
   void loadData(
@@ -1400,6 +1439,22 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
       ) as _i2.WebSettings);
 
   @override
+  _i5.Future<bool> get profileBindingResult => (super.noSuchMethod(
+        Invocation.getter(#profileBindingResult),
+        returnValue: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  set profileBindingResult(_i5.Future<bool>? _profileBindingResult) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #profileBindingResult,
+          _profileBindingResult,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i5.Future<void> loadData({
     required String? data,
     String? mimeType,
@@ -1539,6 +1594,28 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         Invocation.method(
           #clearCache,
           [includeDiskFiles],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setHorizontalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setHorizontalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> setVerticalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setVerticalScrollBarEnabled,
+          [enabled],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

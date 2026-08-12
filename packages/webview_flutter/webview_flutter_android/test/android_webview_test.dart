@@ -101,6 +101,7 @@ void main() {
 
       setUp(() {
         mockPlatformHostApi = MockTestWebViewHostApi();
+        when(mockPlatformHostApi.create(any, any)).thenReturn(false);
         TestWebViewHostApi.setup(mockPlatformHostApi);
 
         instanceManager = InstanceManager(onWeakReferenceRemoved: (_) {});
@@ -111,7 +112,18 @@ void main() {
       });
 
       test('create', () {
-        verify(mockPlatformHostApi.create(webViewInstanceId));
+        verify(mockPlatformHostApi.create(webViewInstanceId, null));
+      });
+
+      test('create with profile', () {
+        final WebView profiledWebView = WebView(profileName: 'workbench_a');
+
+        verify(
+          mockPlatformHostApi.create(
+            instanceManager.getIdentifier(profiledWebView),
+            'workbench_a',
+          ),
+        );
       });
 
       test('setWebContentsDebuggingEnabled true', () {

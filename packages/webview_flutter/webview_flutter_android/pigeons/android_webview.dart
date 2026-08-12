@@ -188,7 +188,7 @@ abstract class CookieManagerHostApi {
 
 @HostApi(dartHostTestHandler: 'TestWebViewHostApi')
 abstract class WebViewHostApi {
-  void create(int instanceId);
+  bool create(int instanceId, String? profileName);
 
   void loadData(
     int instanceId,
@@ -231,6 +231,10 @@ abstract class WebViewHostApi {
   void reload(int instanceId);
 
   void clearCache(int instanceId, bool includeDiskFiles);
+
+  void setHorizontalScrollBarEnabled(int instanceId, bool enabled);
+
+  void setVerticalScrollBarEnabled(int instanceId, bool enabled);
 
   @async
   String? evaluateJavascript(
@@ -452,6 +456,12 @@ abstract class FlutterAssetManagerHostApi {
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+
+  void onReceivedTitle(
+    int instanceId,
+    int webViewInstanceId,
+    String title,
+  );
 
   @async
   List<String> onShowFileChooser(

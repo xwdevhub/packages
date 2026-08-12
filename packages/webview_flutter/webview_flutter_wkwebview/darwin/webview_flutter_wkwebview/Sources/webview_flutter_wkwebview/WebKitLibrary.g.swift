@@ -3409,6 +3409,11 @@ protocol PigeonApiDelegateWKWebViewConfiguration {
   func setWebsiteDataStore(
     pigeonApi: PigeonApiWKWebViewConfiguration, pigeonInstance: WKWebViewConfiguration,
     dataStore: WKWebsiteDataStore) throws
+  /// Selects a persistent website data store by UUID before creating a web
+  /// view. This is supported on iOS 17.0 and macOS 14.0 and later.
+  func setWebsiteDataStoreIdentifier(
+    pigeonApi: PigeonApiWKWebViewConfiguration, pigeonInstance: WKWebViewConfiguration,
+    identifier: String) throws
   /// The object you use to get and set the site’s cookies and to track the
   /// cached data objects.
   func getWebsiteDataStore(
@@ -3548,6 +3553,26 @@ final class PigeonApiWKWebViewConfiguration: PigeonApiProtocolWKWebViewConfigura
       }
     } else {
       setWebsiteDataStoreChannel.setMessageHandler(nil)
+    }
+    let setWebsiteDataStoreIdentifierChannel = FlutterBasicMessageChannel(
+      name:
+        "dev.flutter.pigeon.webview_flutter_wkwebview.WKWebViewConfiguration.setWebsiteDataStoreIdentifier",
+      binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setWebsiteDataStoreIdentifierChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let pigeonInstanceArg = args[0] as! WKWebViewConfiguration
+        let identifierArg = args[1] as! String
+        do {
+          try api.pigeonDelegate.setWebsiteDataStoreIdentifier(
+            pigeonApi: api, pigeonInstance: pigeonInstanceArg, identifier: identifierArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setWebsiteDataStoreIdentifierChannel.setMessageHandler(nil)
     }
     let getWebsiteDataStoreChannel = FlutterBasicMessageChannel(
       name:

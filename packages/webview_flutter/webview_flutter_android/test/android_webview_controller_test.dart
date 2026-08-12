@@ -59,6 +59,8 @@ void main() {
         android_webview.WebView webView,
         android_webview.FileChooserParams params,
       )? onShowFileChooser,
+      void Function(android_webview.WebView webView, String title)?
+          onReceivedTitle,
       android_webview.GeolocationPermissionsShowPrompt?
           onGeolocationPermissionsShowPrompt,
       android_webview.GeolocationPermissionsHidePrompt?
@@ -102,6 +104,9 @@ void main() {
                       android_webview.FileChooserParams params,
                     )? onShowFileChooser,
                     void Function(
+                            android_webview.WebView webView, String title)?
+                        onReceivedTitle,
+                    void Function(
                       android_webview.WebChromeClient instance,
                       android_webview.PermissionRequest request,
                     )? onPermissionRequest,
@@ -131,7 +136,8 @@ void main() {
                   }) =>
                       MockWebChromeClient(),
               createAndroidWebView: (
-                      {dynamic Function(
+                      {String? profileName,
+                      dynamic Function(
                               int left, int top, int oldLeft, int oldTop)?
                           onScrollChanged}) =>
                   nonNullMockWebView,
@@ -192,6 +198,24 @@ void main() {
   }
 
   group('AndroidWebViewController', () {
+    test('creation params expose profileName', () {
+      final AndroidWebViewControllerCreationParams params =
+          AndroidWebViewControllerCreationParams(
+        profileName: 'workbench_a',
+        androidWebStorage: MockWebStorage(),
+      );
+      final AndroidWebViewControllerCreationParams copied =
+          AndroidWebViewControllerCreationParams
+              .fromPlatformWebViewControllerCreationParams(
+        const PlatformWebViewControllerCreationParams(),
+        profileName: 'workbench_b',
+        androidWebStorage: MockWebStorage(),
+      );
+
+      expect(params.profileName, 'workbench_a');
+      expect(copied.profileName, 'workbench_b');
+    });
+
     AndroidJavaScriptChannelParams
         createAndroidJavaScriptChannelParamsWithMocks({
       String? name,
@@ -633,6 +657,7 @@ void main() {
             android_webview.WebView webView,
             android_webview.FileChooserParams params,
           )? onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           dynamic onPermissionRequest,
@@ -704,6 +729,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           Future<void> Function(String origin,
                   android_webview.GeolocationPermissionsCallback callback)?
               onGeolocationPermissionsShowPrompt,
@@ -780,6 +806,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           dynamic onPermissionRequest,
@@ -838,6 +865,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           void Function(
@@ -896,6 +924,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           void Function(
@@ -944,6 +973,7 @@ void main() {
           createWebChromeClient: ({
             dynamic onProgressChanged,
             dynamic onShowFileChooser,
+            dynamic onReceivedTitle,
             dynamic onGeolocationPermissionsShowPrompt,
             dynamic onGeolocationPermissionsHidePrompt,
             dynamic onPermissionRequest,
@@ -981,6 +1011,7 @@ void main() {
           createWebChromeClient: ({
             dynamic onProgressChanged,
             dynamic onShowFileChooser,
+            dynamic onReceivedTitle,
             dynamic onGeolocationPermissionsShowPrompt,
             dynamic onGeolocationPermissionsHidePrompt,
             dynamic onPermissionRequest,
@@ -1020,6 +1051,7 @@ void main() {
           createWebChromeClient: ({
             dynamic onProgressChanged,
             dynamic onShowFileChooser,
+            dynamic onReceivedTitle,
             dynamic onGeolocationPermissionsShowPrompt,
             dynamic onGeolocationPermissionsHidePrompt,
             dynamic onPermissionRequest,
@@ -1070,6 +1102,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           dynamic onPermissionRequest,
@@ -1618,6 +1651,7 @@ void main() {
         createWebChromeClient: ({
           dynamic onProgressChanged,
           dynamic onShowFileChooser,
+          dynamic onReceivedTitle,
           dynamic onGeolocationPermissionsShowPrompt,
           dynamic onGeolocationPermissionsHidePrompt,
           dynamic onPermissionRequest,

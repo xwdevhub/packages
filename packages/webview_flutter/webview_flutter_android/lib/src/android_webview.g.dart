@@ -489,13 +489,14 @@ class WebViewHostApi {
 
   static const MessageCodec<Object?> codec = _WebViewHostApiCodec();
 
-  Future<void> create(int arg_instanceId) async {
+  Future<bool> create(int arg_instanceId, String? arg_profileName) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.webview_flutter_android.WebViewHostApi.create',
         codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_instanceId]) as List<Object?>?;
+        await channel.send(<Object?>[arg_instanceId, arg_profileName])
+            as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -508,7 +509,7 @@ class WebViewHostApi {
         details: replyList[2],
       );
     } else {
-      return;
+      return (replyList[0] as bool?)!;
     }
   }
 
@@ -796,7 +797,7 @@ class WebViewHostApi {
   Future<void> setHorizontalScrollBarEnabled(
       int arg_instanceId, bool arg_includeDiskFiles) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewHostApi.setHorizontalScrollBarEnabled',
+        'dev.flutter.pigeon.webview_flutter_android.WebViewHostApi.setHorizontalScrollBarEnabled',
         codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
@@ -821,7 +822,8 @@ class WebViewHostApi {
   Future<void> setVerticalScrollBarEnabled(
       int arg_instanceId, bool arg_includeDiskFiles) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewHostApi.setVerticalScrollBarEnabled', codec,
+        'dev.flutter.pigeon.webview_flutter_android.WebViewHostApi.setVerticalScrollBarEnabled',
+        codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_instanceId, arg_includeDiskFiles])

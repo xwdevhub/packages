@@ -224,6 +224,25 @@ void main() {
         );
       });
 
+      test('websiteDataStoreIdentifier', () {
+        final MockWKWebViewConfiguration mockConfiguration =
+            MockWKWebViewConfiguration();
+
+        WebKitWebViewControllerCreationParams(
+          webKitProxy: WebKitProxy(
+            newWKWebViewConfiguration: () => mockConfiguration,
+          ),
+          instanceManager: TestInstanceManager(),
+          websiteDataStoreIdentifier: '89b9a7d6-62d4-5d73-b5d1-6d884f1f5846',
+        );
+
+        verify(
+          mockConfiguration.setWebsiteDataStoreIdentifier(
+            '89b9a7d6-62d4-5d73-b5d1-6d884f1f5846',
+          ),
+        );
+      });
+
       test('limitsNavigationsToAppBoundDomains', () {
         final MockWKWebViewConfiguration mockConfiguration =
             MockWKWebViewConfiguration();

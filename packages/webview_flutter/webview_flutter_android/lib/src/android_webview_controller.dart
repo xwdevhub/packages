@@ -30,6 +30,7 @@ class AndroidWebViewControllerCreationParams
   AndroidWebViewControllerCreationParams({
     @visibleForTesting this.androidWebViewProxy = const AndroidWebViewProxy(),
     @visibleForTesting android_webview.WebStorage? androidWebStorage,
+    this.profileName,
   })  : androidWebStorage =
             androidWebStorage ?? android_webview.WebStorage.instance,
         super();
@@ -42,11 +43,13 @@ class AndroidWebViewControllerCreationParams
     @visibleForTesting
     AndroidWebViewProxy androidWebViewProxy = const AndroidWebViewProxy(),
     @visibleForTesting android_webview.WebStorage? androidWebStorage,
+    String? profileName,
   }) {
     return AndroidWebViewControllerCreationParams(
       androidWebViewProxy: androidWebViewProxy,
       androidWebStorage:
           androidWebStorage ?? android_webview.WebStorage.instance,
+      profileName: profileName,
     );
   }
 
@@ -58,6 +61,9 @@ class AndroidWebViewControllerCreationParams
   /// Manages the JavaScript storage APIs provided by the [android_webview.WebView].
   @visibleForTesting
   final android_webview.WebStorage androidWebStorage;
+
+  /// The AndroidX WebKit profile assigned while creating the native WebView.
+  final String? profileName;
 }
 
 /// Android-specific resources that can require permissions.
@@ -100,14 +106,19 @@ class AndroidWebViewController extends PlatformWebViewController {
   /// The native [android_webview.WebView] being controlled.
   late final android_webview.WebView _webView =
       _androidWebViewParams.androidWebViewProxy.createAndroidWebView(
+          profileName: _androidWebViewParams.profileName,
           onScrollChanged: withWeakReferenceTo(this,
               (WeakReference<AndroidWebViewController> weakReference) {
-    return (int left, int top, int oldLeft, int oldTop) async {
-      final void Function(ScrollPositionChange)? callback =
-          weakReference.target?._onScrollPositionChangedCallback;
-      callback?.call(ScrollPositionChange(left.toDouble(), top.toDouble()));
-    };
-  }));
+            return (int left, int top, int oldLeft, int oldTop) async {
+              final void Function(ScrollPositionChange)? callback =
+                  weakReference.target?._onScrollPositionChangedCallback;
+              callback
+                  ?.call(ScrollPositionChange(left.toDouble(), top.toDouble()));
+            };
+          }));
+
+  /// Whether the native WebView was created with the requested profile.
+  Future<bool> get profileBindingResult => _webView.profileBindingResult;
 
   late final android_webview.WebChromeClient _webChromeClient =
       _androidWebViewParams.androidWebViewProxy.createAndroidWebChromeClient(

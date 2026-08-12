@@ -962,7 +962,8 @@ public class GeneratedAndroidWebView {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface WebViewHostApi {
 
-    void create(@NonNull Long instanceId);
+    @NonNull
+    Boolean create(@NonNull Long instanceId, @Nullable String profileName);
 
     void loadData(
         @NonNull Long instanceId,
@@ -1056,9 +1057,13 @@ public class GeneratedAndroidWebView {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
                 ArrayList<Object> args = (ArrayList<Object>) message;
                 Number instanceIdArg = (Number) args.get(0);
+                String profileNameArg = (String) args.get(1);
                 try {
-                  api.create((instanceIdArg == null) ? null : instanceIdArg.longValue());
-                  wrapped.add(0, null);
+                  Boolean output =
+                      api.create(
+                          (instanceIdArg == null) ? null : instanceIdArg.longValue(),
+                          profileNameArg);
+                  wrapped.add(0, output);
                 } catch (Throwable exception) {
                   ArrayList<Object> wrappedError = wrapError(exception);
                   wrapped = wrappedError;

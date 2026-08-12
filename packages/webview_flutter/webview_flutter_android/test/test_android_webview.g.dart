@@ -248,7 +248,7 @@ abstract class TestWebViewHostApi {
       TestDefaultBinaryMessengerBinding.instance;
   static const MessageCodec<Object?> codec = _TestWebViewHostApiCodec();
 
-  void create(int instanceId);
+  bool create(int instanceId, String? profileName);
 
   void loadData(
       int instanceId, String data, String? mimeType, String? encoding);
@@ -322,8 +322,9 @@ abstract class TestWebViewHostApi {
           final int? arg_instanceId = (args[0] as int?);
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.webview_flutter_android.WebViewHostApi.create was null, expected non-null int.');
-          api.create(arg_instanceId!);
-          return <Object?>[];
+          final String? arg_profileName = (args[1] as String?);
+          final bool output = api.create(arg_instanceId!, arg_profileName);
+          return <Object?>[output];
         });
       }
     }

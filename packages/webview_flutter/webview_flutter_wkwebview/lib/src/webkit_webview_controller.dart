@@ -51,6 +51,7 @@ class WebKitWebViewControllerCreationParams
     },
     this.allowsInlineMediaPlayback = false,
     this.limitsNavigationsToAppBoundDomains = false,
+    this.websiteDataStoreIdentifier,
     @visibleForTesting PigeonInstanceManager? instanceManager,
   }) : _instanceManager = instanceManager ?? PigeonInstanceManager.instance {
     _configuration = webKitProxy.newWKWebViewConfiguration();
@@ -77,6 +78,10 @@ class WebKitWebViewControllerCreationParams
         limitsNavigationsToAppBoundDomains,
       );
     }
+    final String? dataStoreIdentifier = websiteDataStoreIdentifier;
+    if (dataStoreIdentifier != null && dataStoreIdentifier.isNotEmpty) {
+      _configuration.setWebsiteDataStoreIdentifier(dataStoreIdentifier);
+    }
   }
 
   /// Constructs a [WebKitWebViewControllerCreationParams] using a
@@ -93,6 +98,7 @@ class WebKitWebViewControllerCreationParams
     },
     bool allowsInlineMediaPlayback = false,
     bool limitsNavigationsToAppBoundDomains = false,
+    String? websiteDataStoreIdentifier,
     @visibleForTesting PigeonInstanceManager? instanceManager,
   }) : this(
           webKitProxy: webKitProxy,
@@ -100,6 +106,7 @@ class WebKitWebViewControllerCreationParams
           allowsInlineMediaPlayback: allowsInlineMediaPlayback,
           limitsNavigationsToAppBoundDomains:
               limitsNavigationsToAppBoundDomains,
+          websiteDataStoreIdentifier: websiteDataStoreIdentifier,
           instanceManager: instanceManager,
         );
 
@@ -122,6 +129,13 @@ class WebKitWebViewControllerCreationParams
   /// (Only available for iOS > 14.0)
   /// Defaults to false.
   final bool limitsNavigationsToAppBoundDomains;
+
+  /// The UUID of the persistent website data store used by this WebView.
+  ///
+  /// On iOS 17.0 and macOS 14.0 and later, WebViews created with the same
+  /// identifier share an isolated persistent data store. Earlier versions use
+  /// the default data store.
+  final String? websiteDataStoreIdentifier;
 
   /// Handles constructing objects and calling static methods for the WebKit
   /// native library.

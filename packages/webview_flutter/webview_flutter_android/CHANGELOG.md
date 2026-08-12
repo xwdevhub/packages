@@ -429,3 +429,6 @@ when it is created without Hybrid Composition.
 ## 2.0.13
 
 * Extract Android implementation from `webview_flutter`.
+## NEXT
+
+* Adds an optional AndroidX WebKit profile name to controller creation parameters.

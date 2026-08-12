@@ -284,6 +284,17 @@ class MockWKWebViewConfiguration extends _i1.Mock
       ) as _i3.Future<void>);
 
   @override
+  _i3.Future<void> setWebsiteDataStoreIdentifier(String? identifier) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setWebsiteDataStoreIdentifier,
+          [identifier],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+
+  @override
   _i3.Future<_i2.WKWebsiteDataStore> getWebsiteDataStore() =>
       (super.noSuchMethod(
         Invocation.method(

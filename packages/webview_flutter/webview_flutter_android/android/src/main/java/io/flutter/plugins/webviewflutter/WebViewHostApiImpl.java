@@ -17,6 +17,8 @@ import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
 import io.flutter.embedding.android.FlutterView;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.platform.PlatformView;
@@ -51,8 +53,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public WebViewPlatformView createWebView(
         @NonNull Context context,
         @NonNull BinaryMessenger binaryMessenger,
-        @NonNull InstanceManager instanceManager) {
-      return new WebViewPlatformView(context, binaryMessenger, instanceManager);
+        @NonNull InstanceManager instanceManager,
+        @Nullable String profileName) {
+      return new WebViewPlatformView(context, binaryMessenger, instanceManager, profileName);
     }
 
     /**
@@ -76,6 +79,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     private WebChromeClientHostApiImpl.SecureWebChromeClient currentWebChromeClient;
 
     private final @NonNull AndroidSdkChecker sdkChecker;
+    private final boolean profileBound;
 
     // Interface for an injectable SDK version checker.
     @VisibleForTesting
@@ -93,10 +97,19 @@ public class WebViewHostApiImpl implements WebViewHostApi {
         @NonNull Context context,
         @NonNull BinaryMessenger binaryMessenger,
         @NonNull InstanceManager instanceManager) {
+      this(context, binaryMessenger, instanceManager, (String) null);
+    }
+
+    public WebViewPlatformView(
+        @NonNull Context context,
+        @NonNull BinaryMessenger binaryMessenger,
+        @NonNull InstanceManager instanceManager,
+        @Nullable String profileName) {
       this(
           context,
           binaryMessenger,
           instanceManager,
+          profileName,
           (int version) -> Build.VERSION.SDK_INT >= version);
     }
 
@@ -106,7 +119,29 @@ public class WebViewHostApiImpl implements WebViewHostApi {
         @NonNull BinaryMessenger binaryMessenger,
         @NonNull InstanceManager instanceManager,
         @NonNull AndroidSdkChecker sdkChecker) {
+      this(context, binaryMessenger, instanceManager, null, sdkChecker);
+    }
+
+    @VisibleForTesting
+    WebViewPlatformView(
+        @NonNull Context context,
+        @NonNull BinaryMessenger binaryMessenger,
+        @NonNull InstanceManager instanceManager,
+        @Nullable String profileName,
+        @NonNull AndroidSdkChecker sdkChecker) {
       super(context);
+      boolean didBindProfile = false;
+      if (profileName != null
+          && !profileName.trim().isEmpty()
+          && WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
+        try {
+          WebViewCompat.setProfile(this, profileName);
+          didBindProfile = true;
+        } catch (RuntimeException ignored) {
+          // Dart receives false and uses the exact-origin fallback strategy.
+        }
+      }
+      profileBound = didBindProfile;
       currentWebViewClient = new WebViewClient();
       currentWebChromeClient = new WebChromeClientHostApiImpl.SecureWebChromeClient();
       api = new WebViewFlutterApiImpl(binaryMessenger, instanceManager);
@@ -114,6 +149,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
       setWebViewClient(currentWebViewClient);
       setWebChromeClient(currentWebChromeClient);
+    }
+
+    boolean isProfileBound() {
+      return profileBound;
     }
 
     @Nullable
@@ -228,16 +267,18 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   @Override
-  public void create(@NonNull Long instanceId) {
+  public Boolean create(@NonNull Long instanceId, @Nullable String profileName) {
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    final WebView webView = webViewProxy.createWebView(context, binaryMessenger, instanceManager);
+    final WebViewPlatformView webView =
+        webViewProxy.createWebView(context, binaryMessenger, instanceManager, profileName);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addDartCreatedInstance(webView, instanceId);
+    return webView.isProfileBound();
   }
 
   @Override

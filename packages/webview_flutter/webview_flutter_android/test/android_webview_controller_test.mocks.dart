@@ -399,6 +399,18 @@ class MockAndroidNavigationDelegate extends _i1.Mock
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setOnSSlAuthError(
+          _i3.SslAuthErrorCallback? onSslAuthError) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setOnSSlAuthError,
+          [onSslAuthError],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [AndroidWebViewController].
@@ -406,6 +418,13 @@ class MockAndroidNavigationDelegate extends _i1.Mock
 /// See the documentation for Mockito's code generation for more information.
 class MockAndroidWebViewController extends _i1.Mock
     implements _i8.AndroidWebViewController {
+  @override
+  _i9.Future<bool> get profileBindingResult => (super.noSuchMethod(
+        Invocation.getter(#profileBindingResult),
+        returnValue: _i9.Future<bool>.value(false),
+        returnValueForMissingStub: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+
   @override
   int get webViewIdentifier => (super.noSuchMethod(
         Invocation.getter(#webViewIdentifier),
@@ -544,6 +563,28 @@ class MockAndroidWebViewController extends _i1.Mock
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<void> setHorizontalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setHorizontalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setVerticalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setVerticalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
   _i9.Future<void> clearLocalStorage() => (super.noSuchMethod(
         Invocation.method(
           #clearLocalStorage,
@@ -560,6 +601,24 @@ class MockAndroidWebViewController extends _i1.Mock
         Invocation.method(
           #setPlatformNavigationDelegate,
           [handler],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setDownloadListener(
+          dynamic Function(
+            String,
+            String,
+            String,
+            String,
+            int,
+          )? onDownloadStart) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setDownloadListener,
+          [onDownloadStart],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
@@ -775,6 +834,16 @@ class MockAndroidWebViewController extends _i1.Mock
       ) as _i9.Future<void>);
 
   @override
+  void setOnReceivedTitle(dynamic Function(String)? onReceivedTitle) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setOnReceivedTitle,
+          [onReceivedTitle],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   _i9.Future<void> setOnPlatformPermissionRequest(
           void Function(_i3.PlatformWebViewPermissionRequest)?
               onPermissionRequest) =>
@@ -883,6 +952,27 @@ class MockAndroidWebViewController extends _i1.Mock
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),
       ) as _i9.Future<void>);
+
+  @override
+  bool supportsSetScrollBarsEnabled() => (super.noSuchMethod(
+        Invocation.method(
+          #supportsSetScrollBarsEnabled,
+          [],
+        ),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+
+  @override
+  _i9.Future<void> setOverScrollMode(_i3.WebViewOverScrollMode? mode) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setOverScrollMode,
+          [mode],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
 }
 
 /// A class which mocks [AndroidWebViewProxy].
@@ -891,43 +981,51 @@ class MockAndroidWebViewController extends _i1.Mock
 class MockAndroidWebViewProxy extends _i1.Mock
     implements _i10.AndroidWebViewProxy {
   @override
-  _i2.WebView Function(
-      {void Function(
-        int,
-        int,
-        int,
-        int,
-      )? onScrollChanged}) get createAndroidWebView => (super.noSuchMethod(
+  _i2.WebView Function({
+    void Function(
+      int,
+      int,
+      int,
+      int,
+    )? onScrollChanged,
+    String? profileName,
+  }) get createAndroidWebView => (super.noSuchMethod(
         Invocation.getter(#createAndroidWebView),
-        returnValue: (
-                {void Function(
-                  int,
-                  int,
-                  int,
-                  int,
-                )? onScrollChanged}) =>
+        returnValue: ({
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )? onScrollChanged,
+          String? profileName,
+        }) =>
             _FakeWebView_7(
           this,
           Invocation.getter(#createAndroidWebView),
         ),
-        returnValueForMissingStub: (
-                {void Function(
-                  int,
-                  int,
-                  int,
-                  int,
-                )? onScrollChanged}) =>
+        returnValueForMissingStub: ({
+          void Function(
+            int,
+            int,
+            int,
+            int,
+          )? onScrollChanged,
+          String? profileName,
+        }) =>
             _FakeWebView_7(
           this,
           Invocation.getter(#createAndroidWebView),
         ),
-      ) as _i2.WebView Function(
-          {void Function(
-            int,
-            int,
-            int,
-            int,
-          )? onScrollChanged}));
+      ) as _i2.WebView Function({
+        void Function(
+          int,
+          int,
+          int,
+          int,
+        )? onScrollChanged,
+        String? profileName,
+      }));
 
   @override
   _i2.WebChromeClient Function({
@@ -962,6 +1060,10 @@ class MockAndroidWebViewProxy extends _i1.Mock
       _i2.WebView,
       int,
     )? onProgressChanged,
+    void Function(
+      _i2.WebView,
+      String,
+    )? onReceivedTitle,
     void Function(
       _i2.WebChromeClient,
       _i2.View,
@@ -1006,6 +1108,10 @@ class MockAndroidWebViewProxy extends _i1.Mock
             _i2.WebView,
             int,
           )? onProgressChanged,
+          void Function(
+            _i2.WebView,
+            String,
+          )? onReceivedTitle,
           void Function(
             _i2.WebChromeClient,
             _i2.View,
@@ -1054,6 +1160,10 @@ class MockAndroidWebViewProxy extends _i1.Mock
             int,
           )? onProgressChanged,
           void Function(
+            _i2.WebView,
+            String,
+          )? onReceivedTitle,
+          void Function(
             _i2.WebChromeClient,
             _i2.View,
             _i2.CustomViewCallback,
@@ -1099,6 +1209,10 @@ class MockAndroidWebViewProxy extends _i1.Mock
           _i2.WebView,
           int,
         )? onProgressChanged,
+        void Function(
+          _i2.WebView,
+          String,
+        )? onReceivedTitle,
         void Function(
           _i2.WebChromeClient,
           _i2.View,
@@ -2313,6 +2427,28 @@ class MockWebSettings extends _i1.Mock implements _i2.WebSettings {
       ) as _i9.Future<void>);
 
   @override
+  _i9.Future<void> setAllowUniversalAccessFromFileURLs(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setAllowUniversalAccessFromFileURLs,
+          [enabled],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setAllowFileAccessFromFileURLs(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setAllowFileAccessFromFileURLs,
+          [enabled],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
   _i9.Future<void> setTextZoom(int? textZoom) => (super.noSuchMethod(
         Invocation.method(
           #setTextZoom,
@@ -2384,6 +2520,23 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
           Invocation.getter(#settings),
         ),
       ) as _i2.WebSettings);
+
+  @override
+  _i9.Future<bool> get profileBindingResult => (super.noSuchMethod(
+        Invocation.getter(#profileBindingResult),
+        returnValue: _i9.Future<bool>.value(false),
+        returnValueForMissingStub: _i9.Future<bool>.value(false),
+      ) as _i9.Future<bool>);
+
+  @override
+  set profileBindingResult(_i9.Future<bool>? _profileBindingResult) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #profileBindingResult,
+          _profileBindingResult,
+        ),
+        returnValueForMissingStub: null,
+      );
 
   @override
   _i9.Future<void> loadData({
@@ -2528,6 +2681,28 @@ class MockWebView extends _i1.Mock implements _i2.WebView {
         Invocation.method(
           #clearCache,
           [includeDiskFiles],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setHorizontalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setHorizontalScrollBarEnabled,
+          [enabled],
+        ),
+        returnValue: _i9.Future<void>.value(),
+        returnValueForMissingStub: _i9.Future<void>.value(),
+      ) as _i9.Future<void>);
+
+  @override
+  _i9.Future<void> setVerticalScrollBarEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setVerticalScrollBarEnabled,
+          [enabled],
         ),
         returnValue: _i9.Future<void>.value(),
         returnValueForMissingStub: _i9.Future<void>.value(),

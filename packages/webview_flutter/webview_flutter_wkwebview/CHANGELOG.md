@@ -1,6 +1,8 @@
 ## 3.22.0
 
 * Adds support to respond to recoverable SSL certificate errors. See `WebKitNavigationDelegate.setOnSSlAuthError`.
+* Adds support for selecting an isolated persistent website data store by UUID
+  on iOS 17.0 and macOS 14.0 and later.
 
 ## 3.21.0
 
