@@ -9,27 +9,30 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-// TODO(a14n): remove this import once Flutter 3.1 or later reaches stable (including flutter/flutter#104231)
-// ignore: unnecessary_import
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:leak_tracker/leak_tracker.dart';
 import 'package:webview_flutter_platform_interface/src/webview_flutter_platform_interface_legacy.dart';
-import 'package:webview_flutter_wkwebview/src/common/instance_manager.dart';
 import 'package:webview_flutter_wkwebview/src/common/weak_reference_utils.dart';
+import 'package:webview_flutter_wkwebview/src/common/web_kit.g.dart';
 import 'package:webview_flutter_wkwebview_example/legacy/navigation_decision.dart';
 import 'package:webview_flutter_wkwebview_example/legacy/navigation_request.dart';
 import 'package:webview_flutter_wkwebview_example/legacy/web_view.dart';
 
+// TODO(bparrishMines): Remove once https://github.com/flutter/flutter/issues/154676
+// is fixed.
+const bool skipOnIosFor154676 = true;
+
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, 0);
-  server.forEach((HttpRequest request) {
+  final HttpServer server =
+      await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+  unawaited(server.forEach((HttpRequest request) {
     if (request.uri.path == '/hello.txt') {
       request.response.writeln('Hello, world.');
     } else if (request.uri.path == '/secondary.txt') {
@@ -42,7 +45,7 @@ Future<void> main() async {
       fail('unexpected request: ${request.method} ${request.uri}');
     }
     request.response.close();
-  });
+  }));
   final String prefixUrl = 'http://${server.address.address}:${server.port}';
   final String primaryUrl = '$prefixUrl/hello.txt';
   final String secondaryUrl = '$prefixUrl/secondary.txt';
@@ -77,19 +80,16 @@ Future<void> main() async {
       'withWeakRefenceTo allows encapsulating class to be garbage collected',
       (WidgetTester tester) async {
     final Completer<int> gcCompleter = Completer<int>();
-    final InstanceManager instanceManager = InstanceManager(
+    final PigeonInstanceManager instanceManager = PigeonInstanceManager(
       onWeakReferenceRemoved: gcCompleter.complete,
     );
 
     ClassWithCallbackClass? instance = ClassWithCallbackClass();
-    instanceManager.addHostCreatedInstance(instance.callbackClass, 0);
+    instanceManager.addDartCreatedInstance(instance.callbackClass);
     instance = null;
 
     // Force garbage collection.
-    await IntegrationTestWidgetsFlutterBinding.instance
-        .watchPerformance(() async {
-      await tester.pumpAndSettle();
-    });
+    await forceGC();
 
     final int gcIdentifier = await gcCompleter.future;
     expect(gcIdentifier, 0);
@@ -173,11 +173,9 @@ Future<void> main() async {
       'test_header': 'flutter_test_header'
     };
     await controller.loadUrl(headersUrl, headers: headers);
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, headersUrl);
 
-    await pageStarts.stream.firstWhere((String url) => url == currentUrl);
-    await pageLoads.stream.firstWhere((String url) => url == currentUrl);
+    await pageStarts.stream.firstWhere((String url) => url == headersUrl);
+    await pageLoads.stream.firstWhere((String url) => url == headersUrl);
 
     final String content = await controller
         .runJavascriptReturningResult('document.documentElement.innerText');
@@ -340,162 +338,139 @@ Future<void> main() async {
   });
 
   group('Video playback policy', () {
-    late String videoTestBase64;
-    setUpAll(() async {
-      final ByteData videoData =
-          await rootBundle.load('assets/sample_video.mp4');
-      final String base64VideoData =
-          base64Encode(Uint8List.view(videoData.buffer));
-      final String videoTest = '''
-        <!DOCTYPE html><html>
-        <head><title>Video auto play</title>
-          <script type="text/javascript">
-            function play() {
-              var video = document.getElementById("video");
-              video.play();
-              video.addEventListener('timeupdate', videoTimeUpdateHandler, false);
-            }
-            function videoTimeUpdateHandler(e) {
-              var video = document.getElementById("video");
-              VideoTestTime.postMessage(video.currentTime);
-            }
-            function isPaused() {
-              var video = document.getElementById("video");
-              return video.paused;
-            }
-            function isFullScreen() {
-              var video = document.getElementById("video");
-              return video.webkitDisplayingFullscreen;
-            }
-          </script>
-        </head>
-        <body onload="play();">
-        <video controls playsinline autoplay id="video">
-          <source src="data:video/mp4;charset=utf-8;base64,$base64VideoData">
-        </video>
-        </body>
-        </html>
-      ''';
-      videoTestBase64 = base64Encode(const Utf8Encoder().convert(videoTest));
-    });
+    testWidgets(
+      'Auto media playback',
+      (WidgetTester tester) async {
+        final String videoTestBase64 = await getTestVideoBase64();
+        Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
+        Completer<void> pageLoaded = Completer<void>();
 
-    testWidgets('Auto media playback', (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+            ),
           ),
-        ),
-      );
-      WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
+        );
+        WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
 
-      String isPaused =
-          await controller.runJavascriptReturningResult('isPaused();');
-      expect(isPaused, _webviewBool(false));
+        String isPaused =
+            await controller.runJavascriptReturningResult('isPaused();');
+        expect(isPaused, _webviewBool(false));
 
-      controllerCompleter = Completer<WebViewController>();
-      pageLoaded = Completer<void>();
+        controllerCompleter = Completer<WebViewController>();
+        pageLoaded = Completer<void>();
 
-      // We change the key to re-create a new webview as we change the initialMediaPlaybackPolicy
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
+        // We change the key to re-create a new webview as we change the initialMediaPlaybackPolicy
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      controller = await controllerCompleter.future;
-      await pageLoaded.future;
+        controller = await controllerCompleter.future;
+        await pageLoaded.future;
 
-      isPaused = await controller.runJavascriptReturningResult('isPaused();');
-      expect(isPaused, _webviewBool(true));
-    });
+        isPaused = await controller.runJavascriptReturningResult('isPaused();');
+        expect(isPaused, _webviewBool(true));
+      },
+      // Flakes on iOS: https://github.com/flutter/flutter/issues/164632
+      skip: Platform.isIOS,
+    );
 
-    testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
-        (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
+    testWidgets(
+      'Changes to initialMediaPlaybackPolicy are ignored',
+      (WidgetTester tester) async {
+        final String videoTestBase64 = await getTestVideoBase64();
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
+        Completer<void> pageLoaded = Completer<void>();
 
-      final GlobalKey key = GlobalKey();
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: key,
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        final GlobalKey key = GlobalKey();
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: key,
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+            ),
           ),
-        ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
+        );
+        final WebViewController controller = await controllerCompleter.future;
+        await pageLoaded.future;
 
-      String isPaused =
-          await controller.runJavascriptReturningResult('isPaused();');
-      expect(isPaused, _webviewBool(false));
+        String isPaused =
+            await controller.runJavascriptReturningResult('isPaused();');
+        expect(isPaused, _webviewBool(false));
 
-      pageLoaded = Completer<void>();
+        pageLoaded = Completer<void>();
 
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: key,
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: key,
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$videoTestBase64',
+              onWebViewCreated: (WebViewController controller) {
+                controllerCompleter.complete(controller);
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (String url) {
+                pageLoaded.complete(null);
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      await controller.reload();
+        await controller.reload();
 
-      await pageLoaded.future;
+        await pageLoaded.future;
 
-      isPaused = await controller.runJavascriptReturningResult('isPaused();');
-      expect(isPaused, _webviewBool(false));
-    });
+        isPaused = await controller.runJavascriptReturningResult('isPaused();');
+        expect(isPaused, _webviewBool(false));
+      },
+      // Flakes on iOS: https://github.com/flutter/flutter/issues/164632
+      skip: Platform.isIOS,
+    );
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
+      final String videoTestBase64 = await getTestVideoBase64();
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       final Completer<void> pageLoaded = Completer<void>();
@@ -542,11 +517,12 @@ Future<void> main() async {
       final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
-    });
+    }, skip: Platform.isMacOS || skipOnIosFor154676);
 
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
+      final String videoTestBase64 = await getTestVideoBase64();
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       final Completer<void> pageLoaded = Completer<void>();
@@ -592,8 +568,10 @@ Future<void> main() async {
       final String fullScreen =
           await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
-    });
-  });
+    }, skip: Platform.isMacOS || skipOnIosFor154676);
+  },
+      // allowsInlineMediaPlayback has no effect on macOS.
+      skip: Platform.isMacOS);
 
   group('Audio playback policy', () {
     late String audioTestBase64;
@@ -760,7 +738,10 @@ Future<void> main() async {
       isPaused = await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
     });
-  });
+  },
+      // OGG playback is not supported on macOS, so the test data would need
+      // to be changed to support macOS.
+      skip: Platform.isMacOS);
 
   testWidgets('getTitle', (WidgetTester tester) async {
     const String getTitleTest = '''
@@ -887,7 +868,10 @@ Future<void> main() async {
       expect(scrollPosX, X_SCROLL * 2);
       expect(scrollPosY, Y_SCROLL * 2);
     });
-  });
+  },
+      // Scroll position is currently not implemented for macOS.
+      // Flakes on iOS: https://github.com/flutter/flutter/issues/154826
+      skip: Platform.isMacOS || Platform.isIOS);
 
   group('NavigationDelegate', () {
     const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
@@ -910,7 +894,7 @@ Future<void> main() async {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              return (request.url.contains('youtube.com'))
+              return request.url.contains('youtube.com')
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             },
@@ -1040,7 +1024,7 @@ Future<void> main() async {
             },
             javascriptMode: JavascriptMode.unrestricted,
             navigationDelegate: (NavigationRequest request) {
-              return (request.url.contains('youtube.com'))
+              return request.url.contains('youtube.com')
                   ? NavigationDecision.prevent
                   : NavigationDecision.navigate;
             },
@@ -1193,13 +1177,13 @@ Future<void> main() async {
   );
 }
 
-// JavaScript booleans evaluate to different string values on Android and iOS.
-// This utility method returns the string boolean value of the current platform.
-String _webviewBool(bool value) {
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return value ? '1' : '0';
+// JavaScript booleans evaluate to different string values on different devices.
+// This utility method returns a matcher that match on either representation.
+Matcher _webviewBool(bool value) {
+  if (value) {
+    return anyOf('true', '1');
   }
-  return value ? 'true' : 'false';
+  return anyOf('false', '0');
 }
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
@@ -1279,13 +1263,14 @@ class ResizableWebViewState extends State<ResizableWebView> {
   }
 }
 
-class CopyableObjectWithCallback with Copyable {
+class CopyableObjectWithCallback extends PigeonInternalProxyApiBaseClass {
   CopyableObjectWithCallback(this.callback);
 
   final VoidCallback callback;
 
   @override
-  CopyableObjectWithCallback copy() {
+  // ignore: non_constant_identifier_names
+  CopyableObjectWithCallback pigeon_copy() {
     return CopyableObjectWithCallback(callback);
   }
 }
@@ -1293,7 +1278,7 @@ class CopyableObjectWithCallback with Copyable {
 class ClassWithCallbackClass {
   ClassWithCallbackClass() {
     callbackClass = CopyableObjectWithCallback(
-      withWeakRefenceTo(
+      withWeakReferenceTo(
         this,
         (WeakReference<ClassWithCallbackClass> weakReference) {
           return () {
@@ -1307,4 +1292,40 @@ class ClassWithCallbackClass {
   }
 
   late final CopyableObjectWithCallback callbackClass;
+}
+
+Future<String> getTestVideoBase64() async {
+  final ByteData videoData = await rootBundle.load('assets/sample_video.mp4');
+  final String base64VideoData = base64Encode(Uint8List.view(videoData.buffer));
+  final String videoTest = '''
+        <!DOCTYPE html><html>
+        <head><title>Video auto play</title>
+          <script type="text/javascript">
+            function play() {
+              var video = document.getElementById("video");
+              video.play();
+              video.addEventListener('timeupdate', videoTimeUpdateHandler, false);
+            }
+            function videoTimeUpdateHandler(e) {
+              var video = document.getElementById("video");
+              VideoTestTime.postMessage(video.currentTime);
+            }
+            function isPaused() {
+              var video = document.getElementById("video");
+              return video.paused;
+            }
+            function isFullScreen() {
+              var video = document.getElementById("video");
+              return video.webkitDisplayingFullscreen;
+            }
+          </script>
+        </head>
+        <body onload="play();">
+        <video controls playsinline autoplay id="video">
+          <source src="data:video/mp4;charset=utf-8;base64,$base64VideoData">
+        </video>
+        </body>
+        </html>
+      ''';
+  return base64Encode(const Utf8Encoder().convert(videoTest));
 }
